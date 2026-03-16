@@ -10,11 +10,12 @@ interface Props {
   totalCount: number
   bibliographies: Bibliography[]
   onAddToBibliography: (bibliographyId: number, paper: Paper) => Promise<void>
+  onBibliographyCreated: (bib: Bibliography) => void
 }
 
 const PAGE_SIZE_OPTIONS = [50, 100, 300]
 
-export default function ResultsList({ results, totalCount, bibliographies, onAddToBibliography }: Props) {
+export default function ResultsList({ results, totalCount, bibliographies, onAddToBibliography, onBibliographyCreated }: Props) {
   const allPapers = results.flatMap(r => r.papers)
   const errors = results.filter(r => r.error)
 
@@ -207,6 +208,7 @@ export default function ResultsList({ results, totalCount, bibliographies, onAdd
           paper={paper}
           bibliographies={bibliographies}
           onAddToBibliography={onAddToBibliography}
+          onBibliographyCreated={onBibliographyCreated}
           isSelected={selectedIds.has(paper.id)}
           onToggle={() => toggleId(paper.id)}
         />

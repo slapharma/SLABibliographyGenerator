@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import type { BibliographyWithPapers } from '../types'
 import { getBibliography, removePaperFromBibliography } from '../lib/api'
 import { exportToCSV, exportToExcel } from '../lib/export'
@@ -8,17 +8,20 @@ import PaperRow from '../components/PaperRow'
 export default function BibliographyDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const [bib, setBib] = useState<BibliographyWithPapers | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!id) return
+    setLoading(true)
+    setError(null)
     getBibliography(Number(id))
       .then(setBib)
       .catch(e => setError(e.message))
       .finally(() => setLoading(false))
-  }, [id])
+  }, [id, location.key])
 
   const handleRemove = async (rowId: number) => {
     if (!bib) return

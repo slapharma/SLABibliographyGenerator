@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import type { Bibliography } from '../types'
 import { listBibliographies, createBibliography, deleteBibliography } from '../lib/api'
 import NewBibliographyModal from '../components/NewBibliographyModal'
@@ -9,8 +9,10 @@ export default function BibliographiesPage() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
 
   const load = async () => {
+    setLoading(true)
     try {
       const data = await listBibliographies()
       setBibs(data)
@@ -19,7 +21,7 @@ export default function BibliographiesPage() {
     }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() }, [location.key])
 
   const handleCreate = async (name: string, description: string) => {
     try {

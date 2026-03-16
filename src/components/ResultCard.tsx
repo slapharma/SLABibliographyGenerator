@@ -7,11 +7,12 @@ interface Props {
   paper: Paper
   bibliographies: Bibliography[]
   onAddToBibliography: (bibliographyId: number, paper: Paper) => Promise<void>
+  onBibliographyCreated: (bib: Bibliography) => void
   isSelected: boolean
   onToggle: () => void
 }
 
-export default function ResultCard({ paper, bibliographies, onAddToBibliography, isSelected, onToggle }: Props) {
+export default function ResultCard({ paper, bibliographies, onAddToBibliography, onBibliographyCreated, isSelected, onToggle }: Props) {
   const [expanded, setExpanded] = useState(false)
   const [selectedBibId, setSelectedBibId] = useState<number | '' | '__new__'>('')
   const [adding, setAdding] = useState(false)
@@ -28,10 +29,14 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
       try {
         const newBib = await createBibliography(newBibName.trim(), '')
         await onAddToBibliography(newBib.id, paper)
+        onBibliographyCreated(newBib)
         setAdded(true)
         setSelectedBibId(newBib.id)
         setNewBibName('')
-        setTimeout(() => setAdded(false), 2000)
+        setTimeout(() => {
+          setAdded(false)
+          setSelectedBibId('')
+        }, 2000)
       } catch {
         // Creating or adding failed — reset state
       } finally {

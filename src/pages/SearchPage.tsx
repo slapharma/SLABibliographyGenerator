@@ -59,6 +59,10 @@ export default function SearchPage() {
     await addPaperToBibliography(bibliographyId, paper)
   }
 
+  const handleBibliographyCreated = useCallback(async () => {
+    await loadBibliographies()
+  }, [loadBibliographies])
+
   const cardStyle: React.CSSProperties = {
     fontFamily: 'Inter, system-ui, sans-serif',
   }
@@ -99,6 +103,7 @@ export default function SearchPage() {
           totalCount={results.totalCount}
           bibliographies={bibliographies}
           onAddToBibliography={handleAddToBibliography}
+          onBibliographyCreated={handleBibliographyCreated}
         />
       )}
 
