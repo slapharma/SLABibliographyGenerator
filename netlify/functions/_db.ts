@@ -52,6 +52,8 @@ let _migrated = false
 export async function migrate() {
   if (_migrated) return
   const db = getDb()
+  // Neon HTTP driver does not support multiple statements in one execute() call
+  // — each CREATE TABLE must be a separate round-trip
   await db.execute(`
     CREATE TABLE IF NOT EXISTS bibliographies (
       id SERIAL PRIMARY KEY,
@@ -59,25 +61,31 @@ export async function migrate() {
       description TEXT NOT NULL DEFAULT '',
       created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
       updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
-    );
+    )
+  `)
+  await db.execute(`
     CREATE TABLE IF NOT EXISTS bibliography_papers (
       id SERIAL PRIMARY KEY,
       bibliography_id INTEGER NOT NULL REFERENCES bibliographies(id) ON DELETE CASCADE,
       paper_data JSONB NOT NULL,
       added_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
-    );
+    )
+  `)
+  await db.execute(`
     CREATE TABLE IF NOT EXISTS saved_searches (
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       params JSONB NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
-    );
+    )
+  `)
+  await db.execute(`
     CREATE TABLE IF NOT EXISTS search_history (
       id SERIAL PRIMARY KEY,
       params JSONB NOT NULL,
       result_count INTEGER NOT NULL DEFAULT 0,
       searched_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
-    );
+    )
   `)
   _migrated = true
 }
