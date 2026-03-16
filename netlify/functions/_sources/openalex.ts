@@ -1,7 +1,7 @@
 import type { SearchParams, Paper } from './types'
 export async function searchOpenAlex(params: SearchParams): Promise<Paper[]> {
   const query = [params.indication, params.keywords].filter(Boolean).join(' ')
-  const url = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per-page=50&filter=publication_year:${params.dateFrom.slice(0,4)}-${params.dateTo.slice(0,4)}&mailto=info@slapharma.com`
+  const url = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per-page=200&filter=publication_year:${params.dateFrom.slice(0,4)}-${params.dateTo.slice(0,4)}&mailto=info@slapharma.com`
   const res = await fetch(url)
   if (!res.ok) return []
   const data = await res.json()

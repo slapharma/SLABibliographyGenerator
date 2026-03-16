@@ -20,7 +20,7 @@ export default function ResultsList({ results, totalCount, bibliographies, onAdd
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
         <div>
           <div style={{ fontSize: 14, color: '#5a6a8a' }}>
-            <strong style={{ color: '#1a2035', fontSize: 16 }}>{totalCount} results</strong> across {results.filter(r => r.papers.length > 0).length} sources
+            <strong style={{ color: '#1a2035', fontSize: 16 }}>{totalCount} unique results</strong>{' '}across {results.filter(r => r.papers.length > 0).length} sources
           </div>
           {/* Per-source tallies */}
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>

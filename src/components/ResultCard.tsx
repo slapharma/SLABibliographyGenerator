@@ -14,8 +14,6 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography 
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
 
-  const color = SOURCE_COLORS[paper.source] ?? { bg: '#f0f2f7', text: '#5a6a8a' }
-
   const handleAdd = async () => {
     if (!selectedBibId) return
     setAdding(true)
@@ -56,9 +54,15 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography 
       )}
 
       <div style={{ display: 'flex', gap: 7, marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-        <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600, background: color.bg, color: color.text }}>
-          {SOURCE_LABELS[paper.source] ?? paper.source}
-        </span>
+        {/* Source badges — one per source this paper was found in */}
+        {(paper.sources ?? [paper.source]).map(src => {
+          const c = SOURCE_COLORS[src] ?? { bg: '#f0f2f7', text: '#5a6a8a' }
+          return (
+            <span key={src} style={{ padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600, background: c.bg, color: c.text }}>
+              {SOURCE_LABELS[src] ?? src}
+            </span>
+          )
+        })}
         {paper.type && (
           <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 500, background: '#f0f2f7', color: '#5a6a8a' }}>
             {paper.type}

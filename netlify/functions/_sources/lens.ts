@@ -14,7 +14,7 @@ export async function searchLens(params: SearchParams): Promise<Paper[]> {
         ],
       },
     },
-    size: 50,
+    size: 500,
     sort: [{ year_published: 'desc' }],
     include: ['lens_id', 'title', 'authors', 'year_published', 'source', 'doi', 'abstract', 'publication_type'],
   }

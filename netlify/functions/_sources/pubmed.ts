@@ -9,7 +9,7 @@ export async function searchPubMed(params: SearchParams): Promise<Paper[]> {
   const minDate = params.dateFrom.replace(/-/g, '/')
   const maxDate = params.dateTo.replace(/-/g, '/')
 
-  const searchUrl = `${BASE}/esearch.fcgi?db=pubmed&term=${encodeURIComponent(query)}&retmax=50&datetype=pdat&mindate=${minDate}&maxdate=${maxDate}&retmode=json${KEY}`
+  const searchUrl = `${BASE}/esearch.fcgi?db=pubmed&term=${encodeURIComponent(query)}&retmax=200&datetype=pdat&mindate=${minDate}&maxdate=${maxDate}&retmode=json${KEY}`
   const searchRes = await fetch(searchUrl)
   if (!searchRes.ok) return []
   const searchData = await searchRes.json()

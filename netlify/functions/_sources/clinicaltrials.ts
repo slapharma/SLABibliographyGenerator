@@ -2,7 +2,7 @@ import type { SearchParams, Paper } from './types'
 
 export async function searchClinicalTrials(params: SearchParams): Promise<Paper[]> {
   const query = [params.indication, params.keywords].filter(Boolean).join(' ')
-  const url = `https://clinicaltrials.gov/api/v2/studies?query.term=${encodeURIComponent(query)}&pageSize=50&format=json`
+  const url = `https://clinicaltrials.gov/api/v2/studies?query.term=${encodeURIComponent(query)}&pageSize=1000&format=json`
   const res = await fetch(url)
   if (!res.ok) return []
   const data = await res.json()

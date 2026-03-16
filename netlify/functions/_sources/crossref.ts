@@ -1,7 +1,7 @@
 import type { SearchParams, Paper } from './types'
 export async function searchCrossRef(params: SearchParams): Promise<Paper[]> {
   const query = [params.indication, params.keywords].filter(Boolean).join(' ')
-  const url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=50&filter=from-pub-date:${params.dateFrom},until-pub-date:${params.dateTo}&mailto=info@slapharma.com`
+  const url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=1000&filter=from-pub-date:${params.dateFrom},until-pub-date:${params.dateTo}&mailto=info@slapharma.com`
   const res = await fetch(url)
   if (!res.ok) return []
   const data = await res.json()

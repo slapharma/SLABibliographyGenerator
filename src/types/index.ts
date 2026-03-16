@@ -12,7 +12,8 @@ export type Source =
 
 export interface Paper {
   id: string              // source:externalId  e.g. "pubmed:38123456"
-  source: Source
+  source: Source          // primary source (first found)
+  sources?: Source[]      // all sources this paper was found in (populated after dedup)
   title: string
   authors: string[]
   journal?: string

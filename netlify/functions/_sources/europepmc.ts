@@ -1,7 +1,7 @@
 import type { SearchParams, Paper } from './types'
 export async function searchEuropePMC(params: SearchParams): Promise<Paper[]> {
   const query = [params.indication, params.keywords].filter(Boolean).join(' AND ')
-  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(query)}&format=json&pageSize=50&fromDate=${params.dateFrom}&toDate=${params.dateTo}`
+  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(query)}&format=json&pageSize=1000&fromDate=${params.dateFrom}&toDate=${params.dateTo}`
   const res = await fetch(url)
   if (!res.ok) return []
   const data = await res.json()
