@@ -9,7 +9,7 @@ const navItems = [
 
 export default function Layout() {
   return (
-    <div style={{ display: 'flex', height: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ display: 'flex', height: '100vh', fontFamily: 'Montserrat, system-ui, sans-serif' }}>
       {/* Sidebar */}
       <aside style={{
         width: 240, background: '#1a2a4a', display: 'flex', flexDirection: 'column',
@@ -17,7 +17,7 @@ export default function Layout() {
       }}>
         {/* Brand */}
         <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          <div style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 17, fontWeight: 700, lineHeight: 1.3 }}>
+          <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 17, fontWeight: 800, lineHeight: 1.3 }}>
             SLA Bibliography<br />Generator
           </div>
           <div style={{ fontSize: 11, color: '#c8a84b', textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: 4 }}>

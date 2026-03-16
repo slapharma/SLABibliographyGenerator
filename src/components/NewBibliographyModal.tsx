@@ -18,7 +18,7 @@ export default function NewBibliographyModal({ onConfirm, onClose }: Props) {
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
       <div style={{ background: '#fff', borderRadius: 12, padding: 28, width: 440, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-        <div style={{ fontFamily: '"Playfair Display", serif', fontSize: 22, fontWeight: 700, color: '#1a2035', marginBottom: 20 }}>
+        <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 22, fontWeight: 800, color: '#1a2035', marginBottom: 20 }}>
           New Bibliography
         </div>
         <label style={{ fontSize: 12, color: '#5a6a8a', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 6 }}>Name</label>

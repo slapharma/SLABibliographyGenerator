@@ -52,10 +52,10 @@ export default function BibliographiesPage() {
   }
 
   return (
-    <div style={{ padding: '32px 36px', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ padding: '32px 36px', fontFamily: 'Montserrat, system-ui, sans-serif' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <div style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 26, fontWeight: 700, color: '#1a2035', marginBottom: 4 }}>Bibliographies</div>
+          <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 26, fontWeight: 800, color: '#1a2035', marginBottom: 4 }}>Bibliographies</div>
           <div style={{ fontSize: 14, color: '#7a8aaa' }}>Named collections of clinical literature</div>
         </div>
         <button onClick={() => setShowModal(true)} style={{ background: '#1a3a6b', border: 'none', color: '#fff', padding: '12px 20px', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
@@ -75,7 +75,7 @@ export default function BibliographiesPage() {
               onMouseEnter={e => (e.currentTarget.style.borderColor = '#c8a84b')}
               onMouseLeave={e => (e.currentTarget.style.borderColor = '#dde3ef')}
             >
-              <div style={{ fontFamily: '"Playfair Display", serif', fontSize: 18, color: '#1a2035', marginBottom: 8, lineHeight: 1.3 }}>{bib.name}</div>
+              <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 18, color: '#1a2035', marginBottom: 8, lineHeight: 1.3 }}>{bib.name}</div>
               {bib.description && <div style={{ fontSize: 13, color: '#7a8aaa', marginBottom: 14, lineHeight: 1.6 }}>{bib.description}</div>}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #eef1f7', marginTop: 'auto' }}>
                 <div style={{ fontSize: 14, color: '#1a3a6b', fontWeight: 600 }}>{bib.paperCount} paper{bib.paperCount !== 1 ? 's' : ''}</div>

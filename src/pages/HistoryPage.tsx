@@ -27,10 +27,10 @@ export default function HistoryPage() {
   }
 
   return (
-    <div style={{ padding: '32px 36px', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ padding: '32px 36px', fontFamily: 'Montserrat, system-ui, sans-serif' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <div style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 26, fontWeight: 700, color: '#1a2035', marginBottom: 4 }}>Search History</div>
+          <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 26, fontWeight: 800, color: '#1a2035', marginBottom: 4 }}>Search History</div>
           <div style={{ fontSize: 14, color: '#7a8aaa' }}>Every search is automatically logged</div>
         </div>
         {entries.length > 0 && (

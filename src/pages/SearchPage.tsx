@@ -64,12 +64,12 @@ export default function SearchPage() {
   }, [loadBibliographies])
 
   const cardStyle: React.CSSProperties = {
-    fontFamily: 'Inter, system-ui, sans-serif',
+    fontFamily: 'Montserrat, system-ui, sans-serif',
   }
 
   return (
     <div style={{ padding: '32px 36px', maxWidth: 960, ...cardStyle }}>
-      <div style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 26, fontWeight: 700, color: '#1a2035', marginBottom: 4 }}>
+      <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 26, fontWeight: 800, color: '#1a2035', marginBottom: 4 }}>
         Literature Search
       </div>
       <div style={{ fontSize: 14, color: '#7a8aaa', marginBottom: 28 }}>
@@ -114,7 +114,7 @@ export default function SearchPage() {
           alignItems: 'center', justifyContent: 'center', zIndex: 1000,
         }}>
           <div style={{ background: '#fff', borderRadius: 12, padding: 28, width: 400, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-            <div style={{ fontFamily: '"Playfair Display", serif', fontSize: 20, fontWeight: 700, color: '#1a2035', marginBottom: 16 }}>
+            <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 20, fontWeight: 800, color: '#1a2035', marginBottom: 16 }}>
               Save Search
             </div>
             <input

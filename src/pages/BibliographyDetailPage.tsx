@@ -31,17 +31,17 @@ export default function BibliographyDetailPage() {
 
   const allPapers = bib?.papers.map(r => r.paper) ?? []
 
-  if (loading) return <div style={{ padding: 60, textAlign: 'center', color: '#9aa5bf', fontFamily: 'Inter, system-ui, sans-serif' }}>Loading...</div>
-  if (error) return <div style={{ padding: 32, color: '#c0392b', fontFamily: 'Inter, system-ui, sans-serif' }}>Error: {error}</div>
+  if (loading) return <div style={{ padding: 60, textAlign: 'center', color: '#9aa5bf', fontFamily: 'Montserrat, system-ui, sans-serif' }}>Loading...</div>
+  if (error) return <div style={{ padding: 32, color: '#c0392b', fontFamily: 'Montserrat, system-ui, sans-serif' }}>Error: {error}</div>
   if (!bib) return null
 
   return (
-    <div style={{ padding: '32px 36px', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ padding: '32px 36px', fontFamily: 'Montserrat, system-ui, sans-serif' }}>
       <button onClick={() => navigate('/bibliographies')} style={{ background: 'none', border: 'none', color: '#7a8aaa', cursor: 'pointer', fontSize: 14, fontWeight: 500, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}>
         ← Back to Bibliographies
       </button>
 
-      <div style={{ fontFamily: '"Playfair Display", serif', fontSize: 30, fontWeight: 700, color: '#1a2035', marginBottom: 4 }}>{bib.name}</div>
+      <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 30, fontWeight: 800, color: '#1a2035', marginBottom: 4 }}>{bib.name}</div>
       <div style={{ fontSize: 14, color: '#7a8aaa', marginBottom: 24 }}>
         {bib.papers.length} paper{bib.papers.length !== 1 ? 's' : ''}
         {bib.description && ` · ${bib.description}`}
