@@ -1,13 +1,14 @@
 import { useState } from 'react'
 
 interface Props {
-  onConfirm: (name: string, description: string) => void
+  onConfirm: (name: string, description: string, creatorName: string) => void
   onClose: () => void
 }
 
 export default function NewBibliographyModal({ onConfirm, onClose }: Props) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [creatorName, setCreatorName] = useState('')
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '11px 14px', border: '1.5px solid #dde3ef', borderRadius: 8,
@@ -29,6 +30,13 @@ export default function NewBibliographyModal({ onConfirm, onClose }: Props) {
           style={inputStyle}
           autoFocus
         />
+        <label style={{ fontSize: 12, color: '#5a6a8a', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 6 }}>Creator Name (required)</label>
+        <input
+          value={creatorName}
+          onChange={e => setCreatorName(e.target.value)}
+          placeholder="Your name..."
+          style={inputStyle}
+        />
         <label style={{ fontSize: 12, color: '#5a6a8a', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 6 }}>Description (optional)</label>
         <textarea
           value={description}
@@ -39,9 +47,9 @@ export default function NewBibliographyModal({ onConfirm, onClose }: Props) {
         <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
           <button onClick={onClose} style={{ padding: '10px 18px', border: '1.5px solid #dde3ef', borderRadius: 8, background: '#fff', color: '#5a6a8a', cursor: 'pointer', fontSize: 14 }}>Cancel</button>
           <button
-            onClick={() => name.trim() && onConfirm(name.trim(), description.trim())}
-            disabled={!name.trim()}
-            style={{ padding: '10px 20px', border: 'none', borderRadius: 8, background: '#1a3a6b', color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 600, opacity: name.trim() ? 1 : 0.5 }}
+            onClick={() => name.trim() && creatorName.trim() && onConfirm(name.trim(), description.trim(), creatorName.trim())}
+            disabled={!name.trim() || !creatorName.trim()}
+            style={{ padding: '10px 20px', border: 'none', borderRadius: 8, background: '#1a3a6b', color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 600, opacity: name.trim() && creatorName.trim() ? 1 : 0.5 }}
           >
             Create
           </button>

@@ -49,6 +49,7 @@ export interface Bibliography {
   id: number
   name: string
   description: string
+  creatorName: string
   createdAt: string
   updatedAt: string
   paperCount: number

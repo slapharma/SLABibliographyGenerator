@@ -15,6 +15,7 @@ export default async (req: Request) => {
         id: bibliographies.id,
         name: bibliographies.name,
         description: bibliographies.description,
+        creatorName: bibliographies.creatorName,
         createdAt: bibliographies.createdAt,
         updatedAt: bibliographies.updatedAt,
         paperCount: sql<number>`(SELECT COUNT(*) FROM bibliography_papers WHERE bibliography_id = ${bibliographies.id})`,
@@ -25,8 +26,8 @@ export default async (req: Request) => {
   }
 
   if (req.method === 'POST') {
-    const { name, description } = await req.json()
-    const [created] = await db.insert(bibliographies).values({ name, description }).returning()
+    const { name, description, creatorName } = await req.json()
+    const [created] = await db.insert(bibliographies).values({ name, description, creatorName: creatorName ?? '' }).returning()
     return json(created, 201)
   }
 

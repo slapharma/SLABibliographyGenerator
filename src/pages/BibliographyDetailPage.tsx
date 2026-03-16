@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import type { BibliographyWithPapers } from '../types'
 import { getBibliography, removePaperFromBibliography } from '../lib/api'
-import { exportToCSV, exportToExcel } from '../lib/export'
+import { exportToExcel } from '../lib/export'
 import PaperRow from '../components/PaperRow'
 
 export default function BibliographyDetailPage() {
@@ -45,21 +45,15 @@ export default function BibliographyDetailPage() {
       <div style={{ fontSize: 14, color: '#7a8aaa', marginBottom: 24 }}>
         {bib.papers.length} paper{bib.papers.length !== 1 ? 's' : ''}
         {bib.description && ` · ${bib.description}`}
+        {bib.creatorName && ` · Created by ${bib.creatorName}`}
       </div>
 
       {/* Toolbar */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
         <button
-          onClick={() => exportToCSV(allPapers, `${bib.name}.csv`)}
-          disabled={allPapers.length === 0}
-          style={{ padding: '10px 18px', border: 'none', borderRadius: 8, background: '#c8a84b', color: '#fff', fontSize: 13, cursor: 'pointer', fontWeight: 600, opacity: allPapers.length === 0 ? 0.5 : 1 }}
-        >
-          ⬇ Export CSV
-        </button>
-        <button
           onClick={() => exportToExcel(allPapers, `${bib.name}.xlsx`)}
           disabled={allPapers.length === 0}
-          style={{ padding: '10px 18px', border: '1.5px solid #dde3ef', borderRadius: 8, background: '#fff', color: '#5a6a8a', fontSize: 13, cursor: 'pointer', fontWeight: 500, opacity: allPapers.length === 0 ? 0.5 : 1 }}
+          style={{ padding: '10px 18px', border: 'none', borderRadius: 8, background: '#c8a84b', color: '#fff', fontSize: 13, cursor: 'pointer', fontWeight: 600, opacity: allPapers.length === 0 ? 0.5 : 1 }}
         >
           ⬇ Export Excel
         </button>

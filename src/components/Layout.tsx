@@ -17,6 +17,14 @@ export default function Layout() {
       }}>
         {/* Brand */}
         <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          {/* Logo */}
+          <div style={{ marginBottom: 12 }}>
+            <img
+              src="/sla-logo.png"
+              alt="SLA Pharma"
+              style={{ width: 120, height: 'auto', borderRadius: 8, background: '#fff', padding: 6, display: 'block' }}
+            />
+          </div>
           <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 17, fontWeight: 800, lineHeight: 1.3 }}>
             SLA Bibliography<br />Generator
           </div>

@@ -32,10 +32,10 @@ export const searchAll = (params: SearchParams) =>
 export const listBibliographies = () =>
   req<Bibliography[]>('/bibliographies')
 
-export const createBibliography = (name: string, description: string) =>
+export const createBibliography = (name: string, description: string, creatorName = '') =>
   req<Bibliography>('/bibliographies', {
     method: 'POST',
-    body: JSON.stringify({ name, description }),
+    body: JSON.stringify({ name, description, creatorName }),
   })
 
 export const getBibliography = (id: number) =>

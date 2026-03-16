@@ -23,9 +23,9 @@ export default function BibliographiesPage() {
 
   useEffect(() => { load() }, [location.key])
 
-  const handleCreate = async (name: string, description: string) => {
+  const handleCreate = async (name: string, description: string, creatorName: string) => {
     try {
-      const created = await createBibliography(name, description)
+      const created = await createBibliography(name, description, creatorName)
       const newBib: Bibliography = { ...(created as Omit<Bibliography, 'paperCount'>), paperCount: 0 }
       setBibs(b => [newBib, ...b])
       setShowModal(false)
@@ -76,7 +76,8 @@ export default function BibliographiesPage() {
               onMouseLeave={e => (e.currentTarget.style.borderColor = '#dde3ef')}
             >
               <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 18, color: '#1a2035', marginBottom: 8, lineHeight: 1.3 }}>{bib.name}</div>
-              {bib.description && <div style={{ fontSize: 13, color: '#7a8aaa', marginBottom: 14, lineHeight: 1.6 }}>{bib.description}</div>}
+              {bib.description && <div style={{ fontSize: 13, color: '#7a8aaa', marginBottom: 6, lineHeight: 1.6 }}>{bib.description}</div>}
+              {bib.creatorName && <div style={{ fontSize: 12, color: '#9aa5bf', marginBottom: 14 }}>Created by {bib.creatorName}</div>}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #eef1f7', marginTop: 'auto' }}>
                 <div style={{ fontSize: 14, color: '#1a3a6b', fontWeight: 600 }}>{bib.paperCount} paper{bib.paperCount !== 1 ? 's' : ''}</div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>

@@ -8,6 +8,7 @@ export const bibliographies = pgTable('bibliographies', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   description: text('description').notNull().default(''),
+  creatorName: text('creator_name').notNull().default(''),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
@@ -86,6 +87,9 @@ export async function migrate() {
       result_count INTEGER NOT NULL DEFAULT 0,
       searched_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
     )
+  `)
+  await db.execute(`
+    ALTER TABLE bibliographies ADD COLUMN IF NOT EXISTS creator_name TEXT NOT NULL DEFAULT '';
   `)
   _migrated = true
 }

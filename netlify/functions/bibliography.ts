@@ -20,9 +20,9 @@ export default async (req: Request) => {
   }
 
   if (req.method === 'PATCH') {
-    const { name, description } = await req.json()
+    const { name, description, creatorName } = await req.json()
     const [updated] = await db.update(bibliographies)
-      .set({ name, description, updatedAt: new Date() })
+      .set({ name, description, ...(creatorName !== undefined ? { creatorName } : {}), updatedAt: new Date() })
       .where(eq(bibliographies.id, id))
       .returning()
     if (!updated) return new Response('Not Found', { status: 404 })

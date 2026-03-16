@@ -18,6 +18,7 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
   const [newBibName, setNewBibName] = useState('')
+  const [newBibCreator, setNewBibCreator] = useState('')
   const [creatingBib, setCreatingBib] = useState(false)
 
   const handleAdd = async () => {
@@ -27,12 +28,13 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
       if (!newBibName.trim()) return
       setCreatingBib(true)
       try {
-        const newBib = await createBibliography(newBibName.trim(), '')
+        const newBib = await createBibliography(newBibName.trim(), '', newBibCreator.trim())
         await onAddToBibliography(newBib.id, paper)
         onBibliographyCreated(newBib)
         setAdded(true)
         setSelectedBibId(newBib.id)
         setNewBibName('')
+        setNewBibCreator('')
         setTimeout(() => {
           setAdded(false)
           setSelectedBibId('')
@@ -147,17 +149,30 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
           </select>
 
           {selectedBibId === '__new__' && (
-            <input
-              type="text"
-              value={newBibName}
-              onChange={e => setNewBibName(e.target.value)}
-              placeholder="Bibliography name..."
-              style={{
-                padding: '5px 10px', borderRadius: 6, border: '1.5px solid #dde3ef',
-                fontSize: 13, color: '#1a2035', background: '#fff',
-                outline: 'none', minWidth: 160,
-              }}
-            />
+            <>
+              <input
+                type="text"
+                value={newBibName}
+                onChange={e => setNewBibName(e.target.value)}
+                placeholder="Bibliography name..."
+                style={{
+                  padding: '5px 10px', borderRadius: 6, border: '1.5px solid #dde3ef',
+                  fontSize: 13, color: '#1a2035', background: '#fff',
+                  outline: 'none', minWidth: 160,
+                }}
+              />
+              <input
+                type="text"
+                value={newBibCreator}
+                onChange={e => setNewBibCreator(e.target.value)}
+                placeholder="Your name..."
+                style={{
+                  padding: '5px 10px', borderRadius: 6, border: '1.5px solid #dde3ef',
+                  fontSize: 13, color: '#1a2035', background: '#fff',
+                  outline: 'none', minWidth: 120,
+                }}
+              />
+            </>
           )}
 
           <button
