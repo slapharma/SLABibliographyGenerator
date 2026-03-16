@@ -1,10 +1,8 @@
 import { useState } from 'react'
-import type { SearchParams, Source } from '../types'
+import type { SearchParams } from '../types'
 import SourceSelector from './SourceSelector'
 
-const ALL_SOURCES: Source[] = ['pubmed', 'europepmc', 'clinicaltrials', 'semanticscholar', 'scholar', 'crossref', 'lens', 'openalex']
-
-const PAPER_TYPES = ['', 'RCT', 'Systematic Review', 'Meta-Analysis', 'Observational', 'Case Report', 'Review', 'Clinical Trial']
+const PAPER_TYPE_OPTIONS = ['RCT', 'Systematic Review', 'Meta-Analysis', 'Observational', 'Case Report', 'Review', 'Clinical Trial']
 
 const TODAY = new Date().toISOString().slice(0, 10)
 const FIVE_YEARS_AGO = `${new Date().getFullYear() - 5}-01-01`
@@ -23,11 +21,31 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
     paperType: initialParams?.paperType ?? '',
     dateFrom: initialParams?.dateFrom ?? FIVE_YEARS_AGO,
     dateTo: initialParams?.dateTo ?? TODAY,
-    sources: initialParams?.sources ?? ALL_SOURCES,
+    sources: initialParams?.sources ?? [],
+  })
+
+  // Local state for multi-select paper types
+  const [selectedPaperTypes, setSelectedPaperTypes] = useState<string[]>(() => {
+    if (initialParams?.paperType) {
+      return initialParams.paperType.split(',').map(s => s.trim()).filter(Boolean)
+    }
+    return []
   })
 
   const set = (key: keyof SearchParams) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setParams(p => ({ ...p, [key]: e.target.value }))
+
+  const togglePaperType = (type: string) => {
+    setSelectedPaperTypes(prev => {
+      const next = prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+      return next
+    })
+  }
+
+  const buildParams = (): SearchParams => ({
+    ...params,
+    paperType: selectedPaperTypes.join(','),
+  })
 
   const inputStyle: React.CSSProperties = {
     width: '100%', background: '#f7f9fc', border: '1.5px solid #dde3ef',
@@ -56,9 +74,27 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
         </div>
         <div>
           <label style={labelStyle}>Paper Type</label>
-          <select style={inputStyle} value={params.paperType} onChange={set('paperType')}>
-            {PAPER_TYPES.map(t => <option key={t} value={t}>{t || 'All types'}</option>)}
-          </select>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', paddingTop: 4 }}>
+            {PAPER_TYPE_OPTIONS.map(type => {
+              const active = selectedPaperTypes.includes(type)
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => togglePaperType(type)}
+                  style={{
+                    padding: '5px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600,
+                    cursor: 'pointer', transition: 'all 0.15s',
+                    border: active ? '1.5px solid #1a3a6b' : '1.5px solid #dde3ef',
+                    background: active ? '#1a3a6b' : '#f7f9fc',
+                    color: active ? '#fff' : '#5a6a8a',
+                  }}
+                >
+                  {type}
+                </button>
+              )
+            })}
+          </div>
         </div>
         <div>
           <label style={labelStyle}>Date Range</label>
@@ -73,7 +109,7 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 20, flexWrap: 'wrap' }}>
         <button
-          onClick={() => onSearch(params)}
+          onClick={() => onSearch(buildParams())}
           disabled={isLoading || (!params.indication && !params.keywords)}
           style={{
             background: '#1a3a6b', border: 'none', color: '#fff', padding: '12px 26px',
@@ -85,7 +121,7 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
           {isLoading ? '⏳ Searching...' : '⚡ Run Search'}
         </button>
         <button
-          onClick={() => onSave(params)}
+          onClick={() => onSave(buildParams())}
           disabled={!params.indication && !params.keywords}
           style={{
             background: '#fff', border: '1.5px solid #dde3ef', color: '#5a6a8a', padding: '11px 18px',
