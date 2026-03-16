@@ -22,17 +22,26 @@ export default function BibliographiesPage() {
   useEffect(() => { load() }, [])
 
   const handleCreate = async (name: string, description: string) => {
-    const created = await createBibliography(name, description)
-    setBibs(b => [created as any, ...b])
-    setShowModal(false)
-    navigate(`/bibliographies/${(created as any).id}`)
+    try {
+      const created = await createBibliography(name, description)
+      const newBib: Bibliography = { ...(created as Omit<Bibliography, 'paperCount'>), paperCount: 0 }
+      setBibs(b => [newBib, ...b])
+      setShowModal(false)
+      navigate(`/bibliographies/${newBib.id}`)
+    } catch (e) {
+      alert('Failed to create bibliography. Please try again.')
+    }
   }
 
   const handleDelete = async (e: React.MouseEvent, id: number) => {
     e.stopPropagation()
     if (!confirm('Delete this bibliography and all its papers?')) return
-    await deleteBibliography(id)
-    setBibs(b => b.filter(bib => bib.id !== id))
+    try {
+      await deleteBibliography(id)
+      setBibs(b => b.filter(bib => bib.id !== id))
+    } catch {
+      alert('Failed to delete. Please try again.')
+    }
   }
 
   const formatDate = (str: string) => {

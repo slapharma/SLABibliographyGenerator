@@ -47,7 +47,10 @@ export function getDb() {
 }
 
 // ── Migrations (run once per cold start) ─────────────────
+let _migrated = false
+
 export async function migrate() {
+  if (_migrated) return
   const db = getDb()
   await db.execute(`
     CREATE TABLE IF NOT EXISTS bibliographies (
@@ -76,4 +79,5 @@ export async function migrate() {
       searched_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
     );
   `)
+  _migrated = true
 }

@@ -6,10 +6,12 @@ import HistoryRow from '../components/HistoryRow'
 export default function HistoryPage() {
   const [entries, setEntries] = useState<HistoryEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     listHistory()
       .then(setEntries)
+      .catch(e => setError(e instanceof Error ? e.message : 'Failed to load'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -38,6 +40,7 @@ export default function HistoryPage() {
         )}
       </div>
 
+      {error && <div style={{ color: '#c0392b', padding: '12px 16px', background: '#fff5f5', borderRadius: 8, marginBottom: 16, fontSize: 14 }}>⚠ {error}</div>}
       {loading ? (
         <div style={{ textAlign: 'center', padding: 60, color: '#9aa5bf' }}>Loading...</div>
       ) : entries.length === 0 ? (

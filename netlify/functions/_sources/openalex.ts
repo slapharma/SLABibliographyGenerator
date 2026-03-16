@@ -22,5 +22,5 @@ function rebuildAbstract(inv: Record<string, number[]>): string {
   for (const [word, positions] of Object.entries(inv)) {
     for (const pos of positions) words[pos] = word
   }
-  return words.join(' ')
+  return words.filter((w): w is string => w !== undefined).join(' ')
 }
