@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 import type { SearchParams, SearchResponse, Bibliography } from '../types'
 import { searchAll, listBibliographies, createSavedSearch, addPaperToBibliography } from '../lib/api'
 import SearchForm from '../components/SearchForm'
@@ -6,6 +7,7 @@ import ResultsList from '../components/ResultsList'
 import type { Paper } from '../types'
 
 export default function SearchPage() {
+  const location = useLocation()
   const [results, setResults] = useState<SearchResponse | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -74,6 +76,8 @@ export default function SearchPage() {
         onSearch={handleSearch}
         onSave={handleSaveRequest}
         isLoading={isLoading}
+        initialParams={location.state?.params}
+        key={JSON.stringify(location.state?.params)}
       />
 
       {error && (
