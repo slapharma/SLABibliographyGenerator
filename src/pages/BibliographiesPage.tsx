@@ -79,7 +79,7 @@ export default function BibliographiesPage() {
               {bib.description && <div style={{ fontSize: 13, color: '#7a8aaa', marginBottom: 6, lineHeight: 1.6 }}>{bib.description}</div>}
               {bib.creatorName && <div style={{ fontSize: 12, color: '#9aa5bf', marginBottom: 14 }}>Created by {bib.creatorName}</div>}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #eef1f7', marginTop: 'auto' }}>
-                <div style={{ fontSize: 14, color: '#1a3a6b', fontWeight: 600 }}>{bib.paperCount} paper{bib.paperCount !== 1 ? 's' : ''}</div>
+                <div style={{ fontSize: 14, color: '#1a3a6b', fontWeight: 600 }}>{Number(bib.paperCount)} paper{Number(bib.paperCount) !== 1 ? 's' : ''}</div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <span style={{ fontSize: 12, color: '#9aa5bf' }}>{formatDate(bib.updatedAt)}</span>
                   <button

@@ -18,7 +18,7 @@ export default async (req: Request) => {
         creatorName: bibliographies.creatorName,
         createdAt: bibliographies.createdAt,
         updatedAt: bibliographies.updatedAt,
-        paperCount: sql<number>`(SELECT COUNT(*) FROM bibliography_papers WHERE bibliography_id = ${bibliographies.id})`,
+        paperCount: sql<number>`(SELECT COUNT(*)::int FROM bibliography_papers WHERE bibliography_id = ${bibliographies.id})`,
       })
       .from(bibliographies)
       .orderBy(bibliographies.updatedAt)
