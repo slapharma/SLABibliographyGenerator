@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { SearchParams } from '../types'
 import SourceSelector from './SourceSelector'
+import { useWindowWidth } from '../hooks/useWindowWidth'
 
 const PAPER_TYPE_OPTIONS = ['RCT', 'Systematic Review', 'Meta-Analysis', 'Observational', 'Case Report', 'Review', 'Clinical Trial']
 
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function SearchForm({ onSearch, onSave, initialParams, isLoading }: Props) {
+  const isMobile = useWindowWidth() < 768
   const [params, setParams] = useState<SearchParams>({
     indication: initialParams?.indication ?? '',
     keywords: initialParams?.keywords ?? '',
@@ -63,7 +65,7 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
         Search Parameters
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginBottom: 20 }}>
+      <div className="form-grid-2" style={{ marginBottom: 20 }}>
         <div>
           <label style={labelStyle}>Indication / Condition</label>
           <input style={inputStyle} value={params.indication} onChange={set('indication')} placeholder="e.g. hypertension" />
@@ -112,7 +114,7 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
           onClick={() => onSearch(buildParams())}
           disabled={isLoading || (!params.indication && !params.keywords)}
           style={{
-            background: '#1a3a6b', border: 'none', color: '#fff', padding: '12px 26px',
+            background: '#1a3a6b', border: 'none', color: '#fff', padding: isMobile ? '10px 18px' : '12px 26px',
             borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: isLoading ? 'not-allowed' : 'pointer',
             opacity: isLoading || (!params.indication && !params.keywords) ? 0.6 : 1,
             display: 'inline-flex', alignItems: 'center', gap: 8,

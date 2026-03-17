@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Paper, Bibliography } from '../types'
 import { SOURCE_COLORS, SOURCE_LABELS } from '../lib/sourceColors'
 import { createBibliography } from '../lib/api'
+import { useWindowWidth } from '../hooks/useWindowWidth'
 
 interface Props {
   paper: Paper
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function ResultCard({ paper, bibliographies, onAddToBibliography, onBibliographyCreated, isSelected, onToggle }: Props) {
+  const isMobile = useWindowWidth() < 768
   const [expanded, setExpanded] = useState(false)
   const [selectedBibId, setSelectedBibId] = useState<number | '' | '__new__'>('')
   const [adding, setAdding] = useState(false)
@@ -122,7 +124,7 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: isMobile ? 'flex-start' : 'center', flexWrap: 'wrap', flexDirection: isMobile ? 'column' : 'row' }}>
           <a href={paper.url} target="_blank" rel="noopener noreferrer" style={{
             padding: '6px 12px', borderRadius: 6, fontSize: 13, border: '1.5px solid #c8d4e8',
             background: '#fff', color: '#3a5a9a', fontWeight: 500, textDecoration: 'none',
@@ -141,7 +143,7 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
                 setSelectedBibId(val ? Number(val) : '')
               }
             }}
-            style={{ padding: '5px 10px', borderRadius: 6, border: '1.5px solid #dde3ef', fontSize: 13, color: '#5a6a8a', background: '#f7f9fc' }}
+            style={{ padding: '5px 10px', borderRadius: 6, border: '1.5px solid #dde3ef', fontSize: 13, color: '#5a6a8a', background: '#f7f9fc', width: isMobile ? '100%' : 'auto' }}
           >
             <option value="">Add to bibliography...</option>
             <option value="__new__">+ Create new bibliography...</option>
@@ -158,7 +160,7 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
                 style={{
                   padding: '5px 10px', borderRadius: 6, border: '1.5px solid #dde3ef',
                   fontSize: 13, color: '#1a2035', background: '#fff',
-                  outline: 'none', minWidth: 160,
+                  outline: 'none', minWidth: isMobile ? 0 : 160, width: isMobile ? '100%' : 'auto',
                 }}
               />
               <input
@@ -169,7 +171,7 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
                 style={{
                   padding: '5px 10px', borderRadius: 6, border: '1.5px solid #dde3ef',
                   fontSize: 13, color: '#1a2035', background: '#fff',
-                  outline: 'none', minWidth: 120,
+                  outline: 'none', minWidth: isMobile ? 0 : 120, width: isMobile ? '100%' : 'auto',
                 }}
               />
             </>

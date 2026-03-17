@@ -27,7 +27,7 @@ export default function HistoryPage() {
   }
 
   return (
-    <div style={{ padding: '32px 36px', fontFamily: 'Montserrat, system-ui, sans-serif' }}>
+    <div className="page-content" style={{ fontFamily: 'Montserrat, system-ui, sans-serif' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 26, fontWeight: 800, color: '#1a2035', marginBottom: 4 }}>Search History</div>

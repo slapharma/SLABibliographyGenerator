@@ -68,7 +68,7 @@ export default function SearchPage() {
   }
 
   return (
-    <div style={{ padding: '32px 36px', maxWidth: 960, ...cardStyle }}>
+    <div className="page-content" style={{ maxWidth: 960, ...cardStyle }}>
       <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 26, fontWeight: 800, color: '#1a2035', marginBottom: 4 }}>
         Literature Search
       </div>

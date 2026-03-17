@@ -36,7 +36,7 @@ export default function BibliographyDetailPage() {
   if (!bib) return null
 
   return (
-    <div style={{ padding: '32px 36px', fontFamily: 'Montserrat, system-ui, sans-serif' }}>
+    <div className="page-content" style={{ fontFamily: 'Montserrat, system-ui, sans-serif' }}>
       <button onClick={() => navigate('/bibliographies')} style={{ background: 'none', border: 'none', color: '#7a8aaa', cursor: 'pointer', fontSize: 14, fontWeight: 500, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}>
         ← Back to Bibliographies
       </button>

@@ -52,7 +52,7 @@ export default function BibliographiesPage() {
   }
 
   return (
-    <div style={{ padding: '32px 36px', fontFamily: 'Montserrat, system-ui, sans-serif' }}>
+    <div className="page-content" style={{ fontFamily: 'Montserrat, system-ui, sans-serif' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 26, fontWeight: 800, color: '#1a2035', marginBottom: 4 }}>Bibliographies</div>
@@ -66,7 +66,7 @@ export default function BibliographiesPage() {
       {loading ? (
         <div style={{ textAlign: 'center', padding: 60, color: '#9aa5bf', fontSize: 15 }}>Loading...</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+        <div className="bib-grid">
           {bibs.map(bib => (
             <div
               key={bib.id}

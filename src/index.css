@@ -9,3 +9,93 @@
   --font-display: "Montserrat", system-ui, sans-serif;
   --font-body: "Montserrat", system-ui, sans-serif;
 }
+
+/* ── Responsive layout ─────────────────────────── */
+
+/* App shell */
+.app-shell {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar — visible on desktop, hidden on mobile */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+/* Bottom nav — hidden on desktop, shown on mobile */
+.bottom-nav {
+  display: none;
+}
+
+/* Page padding */
+.page-content {
+  padding: 32px 36px;
+}
+
+/* Two-column form grid */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+/* Four-column source grid */
+.source-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+/* Bib card grid */
+.bib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #1a2a4a;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    justify-content: space-around;
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  }
+
+  .page-content {
+    padding: 20px 16px 80px; /* bottom padding clears the fixed bottom nav */
+  }
+
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .source-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bib-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results-header-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .hide-on-mobile {
+    display: none !important;
+  }
+}

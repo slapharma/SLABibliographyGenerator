@@ -26,7 +26,7 @@ export default function SourceSelector({ selected, onChange }: Props) {
       <div style={{ fontSize: 12, color: '#5a6a8a', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
         Sources <span style={{ color: '#9aa5bf', textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}>({selected.length} selected)</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+      <div className="source-grid-4">
         {SOURCES.map(src => {
           const checked = selected.includes(src.id)
           return (

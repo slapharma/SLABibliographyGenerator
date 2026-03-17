@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { SourceResult, Bibliography, Paper } from '../types'
+import { useWindowWidth } from '../hooks/useWindowWidth'
 import ResultCard from './ResultCard'
 import { exportToExcel } from '../lib/export'
 import { SOURCE_COLORS, SOURCE_LABELS } from '../lib/sourceColors'
@@ -16,6 +17,7 @@ interface Props {
 const PAGE_SIZE_OPTIONS = [50, 100, 300]
 
 export default function ResultsList({ results, totalCount, bibliographies, onAddToBibliography, onBibliographyCreated }: Props) {
+  const isMobile = useWindowWidth() < 768
   const allPapers = results.flatMap(r => r.papers)
   const errors = results.filter(r => r.error)
 
@@ -89,22 +91,24 @@ export default function ResultsList({ results, totalCount, bibliographies, onAdd
   return (
     <div>
       {/* Header row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+      <div className="results-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
         <div>
           <div style={{ fontSize: 14, color: '#5a6a8a' }}>
             <strong style={{ color: '#1a2035', fontSize: 16 }}>{totalCount} unique results</strong>{' '}across {results.filter(r => r.papers.length > 0).length} sources
           </div>
-          {/* Per-source tallies */}
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
-            {results.filter(r => r.papers.length > 0).map(r => {
-              const color = SOURCE_COLORS[r.source] ?? { bg: '#f0f2f7', text: '#5a6a8a' }
-              return (
-                <span key={r.source} style={{ fontSize: 12, padding: '2px 10px', borderRadius: 20, fontWeight: 500, background: color.bg, color: color.text }}>
-                  {SOURCE_LABELS[r.source] ?? r.source} {r.papers.length}
-                </span>
-              )
-            })}
-          </div>
+          {/* Per-source tallies — hidden on mobile */}
+          {!isMobile && (
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+              {results.filter(r => r.papers.length > 0).map(r => {
+                const color = SOURCE_COLORS[r.source] ?? { bg: '#f0f2f7', text: '#5a6a8a' }
+                return (
+                  <span key={r.source} style={{ fontSize: 12, padding: '2px 10px', borderRadius: 20, fontWeight: 500, background: color.bg, color: color.text }}>
+                    {SOURCE_LABELS[r.source] ?? r.source} {r.papers.length}
+                  </span>
+                )
+              })}
+            </div>
+          )}
           {/* Errors */}
           {errors.length > 0 && (
             <div style={{ marginTop: 6, fontSize: 12, color: '#c0392b' }}>
@@ -216,7 +220,7 @@ export default function ResultsList({ results, totalCount, bibliographies, onAdd
 
       {/* Pagination controls */}
       {totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 24, paddingTop: 16, borderTop: '1px solid #dde3ef' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 24, paddingTop: 16, borderTop: '1px solid #dde3ef', flexWrap: 'wrap' }}>
           <button
             onClick={() => setPage(p => Math.max(0, p - 1))}
             disabled={safePage === 0}
