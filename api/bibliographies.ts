@@ -1,7 +1,7 @@
 export const config = { runtime: 'edge' }
 
 import { getDb, migrate, bibliographies } from '../netlify/functions/_db'
-import { sql } from 'drizzle-orm'
+import { sql, eq } from 'drizzle-orm'
 
 const json = (data: any, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })
@@ -11,18 +11,20 @@ export default async function handler(req: Request): Promise<Response> {
   const db = getDb()
 
   if (req.method === 'GET') {
-    const rows = await db
-      .select({
-        id: bibliographies.id,
-        name: bibliographies.name,
-        description: bibliographies.description,
-        creatorName: bibliographies.creatorName,
-        createdAt: bibliographies.createdAt,
-        updatedAt: bibliographies.updatedAt,
-        paperCount: sql<number>`(SELECT COUNT(*)::int FROM bibliography_papers WHERE bibliography_id = ${bibliographies.id})`,
-      })
-      .from(bibliographies)
-      .orderBy(bibliographies.updatedAt)
+    const rows = await db.execute(sql`
+      SELECT
+        b.id,
+        b.name,
+        b.description,
+        b.creator_name AS "creatorName",
+        b.created_at AS "createdAt",
+        b.updated_at AS "updatedAt",
+        COUNT(bp.id)::int AS "paperCount"
+      FROM bibliographies b
+      LEFT JOIN bibliography_papers bp ON bp.bibliography_id = b.id
+      GROUP BY b.id
+      ORDER BY b.updated_at
+    `)
     return json(rows)
   }
 
