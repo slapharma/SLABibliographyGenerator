@@ -11,7 +11,7 @@ export default async function handler(req: Request): Promise<Response> {
   const db = getDb()
 
   if (req.method === 'GET') {
-    const rows = await db.execute(sql`
+    const result = await db.execute(sql`
       SELECT
         b.id,
         b.name,
@@ -25,7 +25,7 @@ export default async function handler(req: Request): Promise<Response> {
       GROUP BY b.id
       ORDER BY b.updated_at
     `)
-    return json(rows)
+    return json(result.rows)
   }
 
   if (req.method === 'POST') {
