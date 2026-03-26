@@ -15,7 +15,7 @@ export default function PaperRow({ row, onRemove }: Props) {
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 15, color: '#1a2035', fontWeight: 600, marginBottom: 6, lineHeight: 1.5 }}>{p.title}</div>
         <div style={{ fontSize: 13, color: '#7a8aaa', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          {p.authors.slice(0, 3).join(', ')}{p.authors.length > 3 ? ' et al.' : ''}
+          {(p.authors ?? []).slice(0, 3).join(', ')}{(p.authors ?? []).length > 3 ? ' et al.' : ''}
           {p.journal && ` · ${p.journal}`}
           {p.year && ` · ${p.year}`}
           <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: color.bg, color: color.text }}>

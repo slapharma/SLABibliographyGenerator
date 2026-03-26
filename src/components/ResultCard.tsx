@@ -87,7 +87,7 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
           {paper.title}
         </div>
         <div style={{ fontSize: 13, color: '#7a8aaa', marginBottom: 8 }}>
-          {paper.authors.slice(0, 3).join(', ')}{paper.authors.length > 3 ? ' et al.' : ''}
+          {(paper.authors ?? []).slice(0, 3).join(', ')}{(paper.authors ?? []).length > 3 ? ' et al.' : ''}
           {paper.journal && ` · ${paper.journal}`}
           {paper.year && ` · ${paper.year}`}
           {paper.doi && ` · DOI: ${paper.doi}`}
