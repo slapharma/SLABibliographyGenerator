@@ -1,4 +1,4 @@
-export const runtime = 'edge'
+export const config = { runtime: 'edge' }
 
 import { getDb, searchHistory, migrate } from '../netlify/functions/_db'
 import { searchPubMed } from '../netlify/functions/_sources/pubmed'

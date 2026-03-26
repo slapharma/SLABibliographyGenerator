@@ -1,4 +1,4 @@
-export const runtime = 'edge'
+export const config = { runtime: 'edge' }
 
 import { getDb, migrate, bibliographyPapers, bibliographies } from '../netlify/functions/_db'
 import { eq, and } from 'drizzle-orm'
