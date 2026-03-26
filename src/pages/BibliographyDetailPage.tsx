@@ -72,7 +72,6 @@ export default function BibliographyDetailPage() {
     })
 
   const activeFilterCount = [filterSource, filterYearFrom, filterYearTo, filterAuthor, filterType].filter(Boolean).length
-  const allPapers = allRows.map(r => r.paper)
 
   const clearFilters = () => {
     setFilterSource(''); setFilterYearFrom(''); setFilterYearTo('')
