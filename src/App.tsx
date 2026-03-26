@@ -1,5 +1,6 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import HomePage from './pages/HomePage'
 import SearchPage from './pages/SearchPage'
 import BibliographiesPage from './pages/BibliographiesPage'
 import BibliographyDetailPage from './pages/BibliographyDetailPage'
@@ -10,7 +11,7 @@ export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<Navigate to="/search" replace />} />
+        <Route index element={<HomePage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/bibliographies" element={<BibliographiesPage />} />
         <Route path="/bibliographies/:id" element={<BibliographyDetailPage />} />

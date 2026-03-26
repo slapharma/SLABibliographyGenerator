@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 
 const navItems = [
+  { to: '/', icon: '🏠', label: 'Home', exact: true },
   { to: '/search', icon: '🔍', label: 'Search' },
   { to: '/bibliographies', icon: '📚', label: 'Bibliographies' },
   { to: '/saved-searches', icon: '⭐', label: 'Saved' },
@@ -32,7 +33,7 @@ export default function Layout() {
             Navigation
           </div>
           {navItems.map(item => (
-            <NavLink key={item.to} to={item.to} style={({ isActive }) => ({
+            <NavLink key={item.to} to={item.to} end={item.exact} style={({ isActive }) => ({
               display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px',
               borderRadius: 8, textDecoration: 'none', fontSize: 14, marginBottom: 3,
               color: isActive ? '#fff' : '#a8bcda',
@@ -58,7 +59,7 @@ export default function Layout() {
       {/* Bottom nav — mobile only (hidden via CSS on desktop) */}
       <nav className="bottom-nav">
         {navItems.map(item => (
-          <NavLink key={item.to} to={item.to} style={({ isActive }) => ({
+          <NavLink key={item.to} to={item.to} end={item.exact} style={({ isActive }) => ({
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
             textDecoration: 'none', fontSize: 10, fontWeight: isActive ? 600 : 400,
             color: isActive ? '#c8a84b' : '#a8bcda',
