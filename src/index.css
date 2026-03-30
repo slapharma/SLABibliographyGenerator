@@ -22,6 +22,8 @@
 .sidebar {
   width: 240px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Bottom nav — hidden on desktop, shown on mobile */
