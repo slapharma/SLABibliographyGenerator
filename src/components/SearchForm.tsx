@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { SearchParams } from '../types'
 import SourceSelector from './SourceSelector'
 import { useWindowWidth } from '../hooks/useWindowWidth'
@@ -37,11 +37,23 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
   const set = (key: keyof SearchParams) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setParams(p => ({ ...p, [key]: e.target.value }))
 
+  const [paperTypeOpen, setPaperTypeOpen] = useState(false)
+  const paperTypeRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (paperTypeRef.current && !paperTypeRef.current.contains(e.target as Node)) {
+        setPaperTypeOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
   const togglePaperType = (type: string) => {
-    setSelectedPaperTypes(prev => {
-      const next = prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
-      return next
-    })
+    setSelectedPaperTypes(prev =>
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    )
   }
 
   const buildParams = (): SearchParams => ({
@@ -74,29 +86,70 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
           <label style={labelStyle}>Keywords</label>
           <input style={inputStyle} value={params.keywords} onChange={set('keywords')} placeholder="e.g. ACE inhibitor treatment" />
         </div>
-        <div>
+        <div ref={paperTypeRef} style={{ position: 'relative' }}>
           <label style={labelStyle}>Paper Type</label>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', paddingTop: 4 }}>
-            {PAPER_TYPE_OPTIONS.map(type => {
-              const active = selectedPaperTypes.includes(type)
-              return (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => togglePaperType(type)}
-                  style={{
-                    padding: '5px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600,
-                    cursor: 'pointer', transition: 'all 0.15s',
-                    border: active ? '1.5px solid #1a3a6b' : '1.5px solid #dde3ef',
-                    background: active ? '#1a3a6b' : '#f7f9fc',
-                    color: active ? '#fff' : '#5a6a8a',
-                  }}
-                >
-                  {type}
-                </button>
-              )
-            })}
-          </div>
+          <button
+            type="button"
+            onClick={() => setPaperTypeOpen(o => !o)}
+            style={{
+              ...inputStyle, textAlign: 'left', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              color: selectedPaperTypes.length ? '#1a2035' : '#9aa5bf',
+            }}
+          >
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+              {selectedPaperTypes.length === 0
+                ? 'Any type'
+                : selectedPaperTypes.length === 1
+                  ? selectedPaperTypes[0]
+                  : `${selectedPaperTypes.length} types selected`}
+            </span>
+            <span style={{ marginLeft: 8, fontSize: 11, color: '#9aa5bf' }}>{paperTypeOpen ? '▲' : '▼'}</span>
+          </button>
+          {paperTypeOpen && (
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 50,
+              background: '#fff', border: '1.5px solid #dde3ef', borderRadius: 8,
+              boxShadow: '0 4px 16px rgba(26,42,74,0.12)', padding: '6px 0',
+            }}>
+              {PAPER_TYPE_OPTIONS.map(type => {
+                const checked = selectedPaperTypes.includes(type)
+                return (
+                  <label
+                    key={type}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '9px 14px', cursor: 'pointer', fontSize: 14,
+                      color: checked ? '#1a2035' : '#5a6a8a',
+                      background: checked ? '#f0f4ff' : 'transparent',
+                      fontWeight: checked ? 600 : 400,
+                    }}
+                    onMouseEnter={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = '#f7f9fc' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = checked ? '#f0f4ff' : 'transparent' }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => togglePaperType(type)}
+                      style={{ accentColor: '#1a3a6b', width: 15, height: 15, cursor: 'pointer' }}
+                    />
+                    {type}
+                  </label>
+                )
+              })}
+              {selectedPaperTypes.length > 0 && (
+                <div style={{ borderTop: '1px solid #eee', padding: '6px 14px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPaperTypes([])}
+                    style={{ fontSize: 12, color: '#9aa5bf', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  >
+                    Clear selection
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div>
           <label style={labelStyle}>Date Range</label>
