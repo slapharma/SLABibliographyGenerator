@@ -22,7 +22,7 @@ export default async function handler(req: Request): Promise<Response> {
   if (req.method === 'POST') {
     const { name, params } = await req.json()
     const [created] = await db.insert(savedSearches).values({ name, params }).returning()
-    return json(created, 201)
+    return json({ ...created, lastResultIds: [] }, 201)
   }
   if (req.method === 'PATCH') {
     const url = new URL(req.url)

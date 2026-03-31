@@ -87,7 +87,7 @@ export const clearHistory = () =>
 
 // ── Saved Search Result IDs ───────────────────────────────
 export const updateSavedSearchResultIds = (id: number, lastResultIds: string[]) =>
-  req<void>(`/saved-searches?id=${id}`, {
+  req<{ id: number; lastResultIds: string[] }>(`/saved-searches?id=${id}`, {
     method: 'PATCH',
     body: JSON.stringify({ lastResultIds }),
   })
@@ -101,7 +101,7 @@ export const updateBibliographyNote = (rowId: number, note: string) =>
 
 // ── Bibliography Sharing ──────────────────────────────────
 export const enableBibliographySharing = (id: number) =>
-  req<{ shareUrl: string }>(`/bibliography-share?id=${id}`, { method: 'POST' })
+  req<{ shareToken: string; shareUrl: string }>(`/bibliography-share?id=${id}`, { method: 'POST' })
 
 export const disableBibliographySharing = (id: number) =>
   req<void>(`/bibliography-share?id=${id}`, { method: 'DELETE' })
