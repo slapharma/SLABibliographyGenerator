@@ -17,7 +17,6 @@ export default function SearchPage() {
   const [pendingSaveParams, setPendingSaveParams] = useState<SearchParams | null>(null)
 
   const [searchParams] = useSearchParams()
-  const [savedId, setSavedId] = useState<number | null>(null)
   const [lastResultIds, setLastResultIds] = useState<string[]>([])
   const [autoRunDone, setAutoRunDone] = useState(false)
 
@@ -25,7 +24,6 @@ export default function SearchPage() {
     const id = parseInt(searchParams.get('savedId') ?? '0')
     if (!id || autoRunDone) return
     setAutoRunDone(true)
-    setSavedId(id)
     fetch('/api/saved-searches')
       .then(r => r.json())
       .then((searches: SavedSearch[]) => {
@@ -47,7 +45,7 @@ export default function SearchPage() {
     }
   }, [])
 
-  const handleSearch = async (params?: SearchParams, runForSavedId?: number) => {
+  const handleSearch = async (params: SearchParams, runForSavedId?: number) => {
     setIsLoading(true)
     setError(null)
     try {
