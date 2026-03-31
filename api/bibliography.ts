@@ -16,18 +16,40 @@ export default async function handler(req: Request): Promise<Response> {
     const bib = await db.query.bibliographies.findFirst({ where: eq(bibliographies.id, id) })
     if (!bib) return new Response('Not Found', { status: 404 })
     const rows = await db.query.bibliographyPapers.findMany({ where: eq(bibliographyPapers.bibliographyId, id) })
-    const papers = rows.map(r => ({ rowId: r.id, paper: r.paperData }))
-    return json({ ...bib, papers })
+    const papers = rows.map(r => ({
+      rowId: r.id,
+      paper: r.paperData,
+      note: (r as any).note ?? '',
+      addedAt: r.addedAt?.toISOString() ?? new Date().toISOString(),
+    }))
+    return json({
+      ...bib,
+      tags: (bib as any).tags ?? '',
+      shareToken: (bib as any).shareToken ?? null,
+      isShared: (bib as any).isShared ?? false,
+      papers,
+    })
   }
 
   if (req.method === 'PATCH') {
-    const { name, description, creatorName } = await req.json()
+    const body = await req.json()
+    const { name, description, creatorName, tags } = body
     const [updated] = await db.update(bibliographies)
-      .set({ name, description, ...(creatorName !== undefined ? { creatorName } : {}), updatedAt: new Date() })
+      .set({
+        ...(name !== undefined ? { name } : {}),
+        ...(description !== undefined ? { description } : {}),
+        ...(creatorName !== undefined ? { creatorName } : {}),
+        updatedAt: new Date(),
+      })
       .where(eq(bibliographies.id, id))
       .returning()
     if (!updated) return new Response('Not Found', { status: 404 })
-    return json(updated)
+    // tags is stored via raw SQL since Drizzle schema doesn't have it yet
+    if (tags !== undefined) {
+      const safeTags = String(tags).replace(/'/g, "''")
+      await db.execute(`UPDATE bibliographies SET tags = '${safeTags}' WHERE id = ${id}`)
+    }
+    return json({ ...updated, tags: tags ?? (updated as any).tags ?? '' })
   }
 
   if (req.method === 'DELETE') {
