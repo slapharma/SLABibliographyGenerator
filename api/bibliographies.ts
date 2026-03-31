@@ -17,13 +17,16 @@ export default async function handler(req: Request): Promise<Response> {
         b.name,
         b.description,
         b.creator_name AS "creatorName",
+        COALESCE(b.tags, '') AS tags,
+        b.share_token AS "shareToken",
+        COALESCE(b.is_shared, false) AS "isShared",
         b.created_at AS "createdAt",
         b.updated_at AS "updatedAt",
         COUNT(bp.id)::int AS "paperCount"
       FROM bibliographies b
       LEFT JOIN bibliography_papers bp ON bp.bibliography_id = b.id
       GROUP BY b.id
-      ORDER BY b.updated_at
+      ORDER BY b.updated_at DESC
     `)
     return json(result.rows)
   }
