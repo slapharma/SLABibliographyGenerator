@@ -37,6 +37,31 @@ export function exportToExcel(papers: Paper[], filename = 'bibliography.xlsx') {
   XLSX.writeFile(wb, filename)
 }
 
+export function exportBibliographyRowsToExcel(rows: import('../types').BibliographyPaperRow[], filename = 'bibliography.xlsx') {
+  const data = rows.map(row => ({
+    Title: row.paper.title,
+    Authors: (row.paper.authors ?? []).join('; '),
+    Journal: row.paper.journal ?? '',
+    Year: row.paper.year ?? '',
+    DOI: row.paper.doi ?? '',
+    URL: row.paper.url,
+    Source: row.paper.source,
+    Type: row.paper.type ?? '',
+    Abstract: row.paper.abstract ?? '',
+    'Citation Count': row.paper.citationCount ?? '',
+    Notes: row.note ?? '',
+    'Date Added': row.addedAt ? new Date(row.addedAt).toLocaleDateString('en-GB') : '',
+  }))
+  const wb = XLSX.utils.book_new()
+  const ws = XLSX.utils.json_to_sheet(data)
+  const colWidths = Object.keys(data[0] ?? {}).map(key => ({
+    wch: Math.max(key.length, ...data.map(r => String((r as any)[key] ?? '').length).slice(0, 50)),
+  }))
+  ws['!cols'] = colWidths
+  XLSX.utils.book_append_sheet(wb, ws, 'Bibliography')
+  XLSX.writeFile(wb, filename)
+}
+
 function downloadBlob(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType })
   const url = URL.createObjectURL(blob)

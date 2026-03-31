@@ -261,7 +261,7 @@ export default function BibliographyDetailPage() {
       {/* Toolbar */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 18, flexWrap: 'wrap', alignItems: 'center' }}>
         <button
-          onClick={() => exportToExcel(displayedRows.map(r => r.paper), `${bib.name}.xlsx`)}
+          onClick={() => exportBibliographyRowsToExcel(displayedRows, `${bib.name.replace(/\s+/g, '-')}.xlsx`)}
           disabled={displayedRows.length === 0}
           style={{ padding: '10px 18px', border: 'none', borderRadius: 8, background: '#c8a84b', color: '#fff', fontSize: 13, cursor: 'pointer', fontWeight: 600, opacity: displayedRows.length === 0 ? 0.5 : 1 }}
         >
