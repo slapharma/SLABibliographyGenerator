@@ -62,6 +62,8 @@ export default function BibliographyDetailPage() {
         // shareUrl must be set here (after bib loads) — not at state declaration time
         if (data.isShared && data.shareToken) {
           setShareUrl(`${window.location.origin}/share/${data.shareToken}`)
+        } else {
+          setShareUrl(null)
         }
       })
       .catch(e => setError(e.message))

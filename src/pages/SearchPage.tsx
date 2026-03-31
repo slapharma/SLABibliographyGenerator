@@ -32,7 +32,7 @@ export default function SearchPage() {
         const found = searches.find(s => s.id === id)
         if (!found) return
         setLastResultIds(found.lastResultIds ?? [])
-        handleSearch(found.params)
+        handleSearch(found.params, id)
       })
       .catch(() => {}) // silently ignore — user can run manually
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,7 +47,7 @@ export default function SearchPage() {
     }
   }, [])
 
-  const handleSearch = async (params: SearchParams) => {
+  const handleSearch = async (params?: SearchParams, runForSavedId?: number) => {
     setIsLoading(true)
     setError(null)
     try {
@@ -55,10 +55,10 @@ export default function SearchPage() {
       const response = await searchAll(params)
       setResults(response)
       // If this was a saved search re-run, update lastResultIds
-      if (savedId) {
+      if (runForSavedId) {
         const allPapers = response.results.flatMap((r: any) => r.papers)
         const ids = allPapers.map((p: any) => p.doi ?? p.id)
-        updateSavedSearchResultIds(savedId, ids).catch(() => {})
+        updateSavedSearchResultIds(runForSavedId, ids).catch(() => {})
         setLastResultIds(ids)
       }
     } catch (e) {
