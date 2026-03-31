@@ -41,10 +41,10 @@ export const createBibliography = (name: string, description: string, creatorNam
 export const getBibliography = (id: number) =>
   req<BibliographyWithPapers>(`/bibliography?id=${id}`)
 
-export const updateBibliography = (id: number, name: string, description: string) =>
+export const updateBibliography = (id: number, fields: { name?: string; description?: string; creatorName?: string; tags?: string }) =>
   req<Bibliography>(`/bibliography?id=${id}`, {
     method: 'PATCH',
-    body: JSON.stringify({ name, description }),
+    body: JSON.stringify(fields),
   })
 
 export const deleteBibliography = (id: number) =>
@@ -84,3 +84,27 @@ export const deleteHistoryEntry = (id: number) =>
 
 export const clearHistory = () =>
   req<void>('/history', { method: 'DELETE' })
+
+// ── Saved Search Result IDs ───────────────────────────────
+export const updateSavedSearchResultIds = (id: number, lastResultIds: string[]) =>
+  req<void>(`/saved-searches?id=${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ lastResultIds }),
+  })
+
+// ── Bibliography Notes ────────────────────────────────────
+export const updateBibliographyNote = (rowId: number, note: string) =>
+  req<void>(`/bibliography-paper-note?rowId=${rowId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ note }),
+  })
+
+// ── Bibliography Sharing ──────────────────────────────────
+export const enableBibliographySharing = (id: number) =>
+  req<{ shareUrl: string }>(`/bibliography-share?id=${id}`, { method: 'POST' })
+
+export const disableBibliographySharing = (id: number) =>
+  req<void>(`/bibliography-share?id=${id}`, { method: 'DELETE' })
+
+export const getSharedBibliography = (token: string) =>
+  req<BibliographyWithPapers>(`/share?token=${encodeURIComponent(token)}`)
