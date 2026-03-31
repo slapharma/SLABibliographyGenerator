@@ -19,7 +19,7 @@ export default async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url)
   const token = url.searchParams.get('token')
 
-  if (!token) return json({ error: 'token is required' }, 400)
+  if (!token) return new Response('Not Found', { status: 404 })
 
   if (req.method === 'GET') {
     // Fetch bib by token — return 404 for both missing AND is_shared=false (prevents token enumeration)
