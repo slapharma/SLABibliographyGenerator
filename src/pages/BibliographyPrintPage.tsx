@@ -1,12 +1,13 @@
 // src/pages/BibliographyPrintPage.tsx
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import type { BibliographyWithPapers, CitationStyle } from '../types'
 import { getBibliography } from '../lib/api'
 import { formatCitation } from '../lib/citations'
 
 export default function BibliographyPrintPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const [bib, setBib] = useState<BibliographyWithPapers | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -34,7 +35,7 @@ export default function BibliographyPrintPage() {
     <div style={{ maxWidth: 760, margin: '0 auto', padding: '32px 24px', fontFamily: 'Georgia, serif' }}>
       {/* Print controls — hidden on print */}
       <div className="no-print" style={{ display: 'flex', gap: 12, marginBottom: 28 }}>
-        <button onClick={() => window.history.back()} style={{ padding: '7px 14px', borderRadius: 6, border: '1.5px solid #dde3ef', background: '#fff', cursor: 'pointer', fontSize: 13 }}>
+        <button onClick={() => navigate(`/bibliographies/${id}`)} style={{ padding: '7px 14px', borderRadius: 6, border: '1.5px solid #dde3ef', background: '#fff', cursor: 'pointer', fontSize: 13 }}>
           ← Back
         </button>
         <button onClick={() => window.print()} style={{ padding: '7px 18px', borderRadius: 6, border: 'none', background: '#1a3a6b', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
@@ -44,6 +45,7 @@ export default function BibliographyPrintPage() {
 
       {/* Header */}
       <div style={{ borderBottom: '2px solid #1a2a4a', paddingBottom: 16, marginBottom: 24 }}>
+        <img src="/sla-logo.png" alt="SLA Pharma" style={{ height: 48, marginBottom: 12, display: 'block' }} />
         <h1 style={{ fontSize: 22, fontWeight: 700, color: '#1a2035', margin: 0 }}>{bib.name}</h1>
         {bib.creatorName && <p style={{ margin: '4px 0 0', color: '#7a8aaa', fontSize: 13 }}>Created by {bib.creatorName}</p>}
         {bib.description && <p style={{ margin: '6px 0 0', color: '#5a6a8a', fontSize: 13 }}>{bib.description}</p>}
@@ -72,9 +74,9 @@ export default function BibliographyPrintPage() {
               fontSize: 13,
               lineHeight: 1.7,
               color: '#1a2035',
-              pageBreakInside: 'avoid',
+              breakInside: 'avoid',
               // Insert a forced page break before every 31st item (after every 30)
-              ...((i > 0 && i % 30 === 0) ? { pageBreakBefore: 'always' } : {}),
+              ...((i > 0 && i % 30 === 0) ? { breakBefore: 'page' } : {}),
             }}
           >
             {formatCitation(row.paper, citationStyle)}
@@ -86,7 +88,7 @@ export default function BibliographyPrintPage() {
         @media print {
           .no-print { display: none !important; }
           body { background: white; }
-          li { page-break-inside: avoid; }
+          li { break-inside: avoid; }
         }
       `}</style>
     </div>

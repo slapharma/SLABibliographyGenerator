@@ -1,5 +1,5 @@
 // src/pages/SharedBibliographyPage.tsx
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import type { BibliographyWithPapers } from '../types'
 import { getSharedBibliography } from '../lib/api'
@@ -11,7 +11,7 @@ export default function SharedBibliographyPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<'not-found' | 'network' | null>(null)
 
-  const load = () => {
+  const load = useCallback(() => {
     if (!token) return
     setLoading(true)
     setError(null)
@@ -22,9 +22,9 @@ export default function SharedBibliographyPage() {
         else setError('network')
       })
       .finally(() => setLoading(false))
-  }
+  }, [token])
 
-  useEffect(load, [token])
+  useEffect(load, [load])
 
   if (loading) return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', fontFamily: 'Montserrat, system-ui, sans-serif' }}>

@@ -42,10 +42,14 @@ export default function PaperRow({ row, onRemove, citationStyle }: Props) {
 
   // Citation copy
   const [copied, setCopied] = useState(false)
-  const copyCitation = () => {
-    navigator.clipboard.writeText(formatCitation(p, citationStyle))
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const copyCitation = async () => {
+    try {
+      await navigator.clipboard.writeText(formatCitation(p, citationStyle))
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard unavailable (e.g., non-HTTPS context or permission denied)
+    }
   }
 
   // Date added
