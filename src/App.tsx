@@ -6,10 +6,16 @@ import BibliographiesPage from './pages/BibliographiesPage'
 import BibliographyDetailPage from './pages/BibliographyDetailPage'
 import SavedSearchesPage from './pages/SavedSearchesPage'
 import HistoryPage from './pages/HistoryPage'
+import BibliographyPrintPage from './pages/BibliographyPrintPage'
+import SharedBibliographyPage from './pages/SharedBibliographyPage'
 
 export default function App() {
   return (
     <Routes>
+      {/* Standalone routes — no sidebar */}
+      <Route path="/bibliographies/:id/print" element={<BibliographyPrintPage />} />
+      <Route path="/share/:token" element={<SharedBibliographyPage />} />
+
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="/search" element={<SearchPage />} />
