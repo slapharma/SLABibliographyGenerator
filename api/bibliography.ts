@@ -1,7 +1,7 @@
 export const config = { runtime: 'edge' }
 
 import { getDb, migrate, bibliographies, bibliographyPapers } from '../netlify/functions/_db'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 const json = (data: any, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })
@@ -20,7 +20,7 @@ export default async function handler(req: Request): Promise<Response> {
       rowId: r.id,
       paper: r.paperData,
       note: (r as any).note ?? '',
-      addedAt: r.addedAt?.toISOString() ?? new Date().toISOString(),
+      addedAt: r.addedAt!.toISOString(),
     }))
     return json({
       ...bib,
@@ -46,10 +46,14 @@ export default async function handler(req: Request): Promise<Response> {
     if (!updated) return new Response('Not Found', { status: 404 })
     // tags is stored via raw SQL since Drizzle schema doesn't have it yet
     if (tags !== undefined) {
-      const safeTags = String(tags).replace(/'/g, "''")
-      await db.execute(`UPDATE bibliographies SET tags = '${safeTags}' WHERE id = ${id}`)
+      await db.execute(sql`UPDATE bibliographies SET tags = ${tags} WHERE id = ${id}`)
     }
-    return json({ ...updated, tags: tags ?? (updated as any).tags ?? '' })
+    let currentTags = tags
+    if (tags === undefined) {
+      const result = await db.execute(sql`SELECT tags FROM bibliographies WHERE id = ${id}`)
+      currentTags = (result.rows[0] as any)?.tags ?? ''
+    }
+    return json({ ...updated, tags: currentTags ?? '' })
   }
 
   if (req.method === 'DELETE') {
