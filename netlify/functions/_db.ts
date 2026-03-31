@@ -91,5 +91,10 @@ export async function migrate() {
   await db.execute(`
     ALTER TABLE bibliographies ADD COLUMN IF NOT EXISTS creator_name TEXT NOT NULL DEFAULT '';
   `)
+  await db.execute(`ALTER TABLE bibliography_papers ADD COLUMN IF NOT EXISTS note TEXT NOT NULL DEFAULT ''`)
+  await db.execute(`ALTER TABLE bibliographies ADD COLUMN IF NOT EXISTS tags TEXT NOT NULL DEFAULT ''`)
+  await db.execute(`ALTER TABLE bibliographies ADD COLUMN IF NOT EXISTS share_token TEXT`)
+  await db.execute(`ALTER TABLE bibliographies ADD COLUMN IF NOT EXISTS is_shared BOOLEAN NOT NULL DEFAULT false`)
+  await db.execute(`ALTER TABLE saved_searches ADD COLUMN IF NOT EXISTS last_result_ids JSONB NOT NULL DEFAULT '[]'`)
   _migrated = true
 }
