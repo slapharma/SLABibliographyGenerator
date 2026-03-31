@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react'
-import { useLocation } from 'react-router-dom'
-import type { SearchParams, SearchResponse, Bibliography } from '../types'
-import { searchAll, listBibliographies, createSavedSearch, addPaperToBibliography } from '../lib/api'
+import { useState, useCallback, useEffect } from 'react'
+import { useLocation, useSearchParams } from 'react-router-dom'
+import type { SearchParams, SearchResponse, Bibliography, SavedSearch } from '../types'
+import { searchAll, listBibliographies, createSavedSearch, addPaperToBibliography, updateSavedSearchResultIds } from '../lib/api'
 import SearchForm from '../components/SearchForm'
 import ResultsList from '../components/ResultsList'
 import type { Paper } from '../types'
@@ -15,6 +15,28 @@ export default function SearchPage() {
   const [saveModalOpen, setSaveModalOpen] = useState(false)
   const [saveName, setSaveName] = useState('')
   const [pendingSaveParams, setPendingSaveParams] = useState<SearchParams | null>(null)
+
+  const [searchParams] = useSearchParams()
+  const [savedId, setSavedId] = useState<number | null>(null)
+  const [lastResultIds, setLastResultIds] = useState<string[]>([])
+  const [autoRunDone, setAutoRunDone] = useState(false)
+
+  useEffect(() => {
+    const id = parseInt(searchParams.get('savedId') ?? '0')
+    if (!id || autoRunDone) return
+    setAutoRunDone(true)
+    setSavedId(id)
+    fetch('/api/saved-searches')
+      .then(r => r.json())
+      .then((searches: SavedSearch[]) => {
+        const found = searches.find(s => s.id === id)
+        if (!found) return
+        setLastResultIds(found.lastResultIds ?? [])
+        handleSearch(found.params)
+      })
+      .catch(() => {}) // silently ignore — user can run manually
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   const loadBibliographies = useCallback(async () => {
     try {
@@ -32,6 +54,13 @@ export default function SearchPage() {
       await loadBibliographies()
       const response = await searchAll(params)
       setResults(response)
+      // If this was a saved search re-run, update lastResultIds
+      if (savedId) {
+        const allPapers = response.results.flatMap((r: any) => r.papers)
+        const ids = allPapers.map((p: any) => p.doi ?? p.id)
+        updateSavedSearchResultIds(savedId, ids).catch(() => {})
+        setLastResultIds(ids)
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Search failed')
     } finally {
@@ -104,6 +133,7 @@ export default function SearchPage() {
           bibliographies={bibliographies}
           onAddToBibliography={handleAddToBibliography}
           onBibliographyCreated={handleBibliographyCreated}
+          lastResultIds={lastResultIds}
         />
       )}
 

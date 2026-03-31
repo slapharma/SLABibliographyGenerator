@@ -11,9 +11,10 @@ interface Props {
   onBibliographyCreated: (bib: Bibliography) => void
   isSelected: boolean
   onToggle: () => void
+  isNew?: boolean
 }
 
-export default function ResultCard({ paper, bibliographies, onAddToBibliography, onBibliographyCreated, isSelected, onToggle }: Props) {
+export default function ResultCard({ paper, bibliographies, onAddToBibliography, onBibliographyCreated, isSelected, onToggle, isNew }: Props) {
   const isMobile = useWindowWidth() < 768
   const [expanded, setExpanded] = useState(false)
   const [selectedBibId, setSelectedBibId] = useState<number | '' | '__new__'>('')
@@ -72,6 +73,12 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
       transition: 'border-color 0.15s, background 0.15s',
       position: 'relative',
     }}>
+      {isNew && (
+        <div style={{ position: 'absolute', top: 12, right: 12, background: '#22c55e', color: '#fff', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20, letterSpacing: '0.05em' }}>
+          NEW
+        </div>
+      )}
+
       {/* Checkbox in top-left */}
       <div style={{ position: 'absolute', top: 16, left: 16 }}>
         <input

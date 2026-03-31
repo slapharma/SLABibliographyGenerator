@@ -12,11 +12,12 @@ interface Props {
   bibliographies: Bibliography[]
   onAddToBibliography: (bibliographyId: number, paper: Paper) => Promise<void>
   onBibliographyCreated: (bib: Bibliography) => void
+  lastResultIds: string[]
 }
 
 const PAGE_SIZE_OPTIONS = [50, 100, 300]
 
-export default function ResultsList({ results, totalCount, bibliographies, onAddToBibliography, onBibliographyCreated }: Props) {
+export default function ResultsList({ results, totalCount, bibliographies, onAddToBibliography, onBibliographyCreated, lastResultIds }: Props) {
   const isMobile = useWindowWidth() < 768
   const allPapers = results.flatMap(r => r.papers)
   const errors = results.filter(r => r.error)
@@ -206,17 +207,22 @@ export default function ResultsList({ results, totalCount, bibliographies, onAdd
       )}
 
       {/* Result cards */}
-      {pagedPapers.map(paper => (
-        <ResultCard
-          key={paper.id}
-          paper={paper}
-          bibliographies={bibliographies}
-          onAddToBibliography={onAddToBibliography}
-          onBibliographyCreated={onBibliographyCreated}
-          isSelected={selectedIds.has(paper.id)}
-          onToggle={() => toggleId(paper.id)}
-        />
-      ))}
+      {pagedPapers.map(paper => {
+        const key = paper.doi ?? paper.id
+        const isNew = lastResultIds.length > 0 && !lastResultIds.includes(key)
+        return (
+          <ResultCard
+            key={paper.id}
+            paper={paper}
+            bibliographies={bibliographies}
+            onAddToBibliography={onAddToBibliography}
+            onBibliographyCreated={onBibliographyCreated}
+            isSelected={selectedIds.has(paper.id)}
+            onToggle={() => toggleId(paper.id)}
+            isNew={isNew}
+          />
+        )
+      })}
 
       {/* Pagination controls */}
       {totalPages > 1 && (
