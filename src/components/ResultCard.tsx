@@ -94,11 +94,18 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
         </div>
 
         {paper.abstract && (
-          <div style={{ fontSize: 13, color: '#5a6a8a', lineHeight: 1.7, marginBottom: 10 }}>
-            {expanded ? paper.abstract : `${paper.abstract.slice(0, 200)}...`}
-            <button onClick={() => setExpanded(e => !e)} style={{ background: 'none', border: 'none', color: '#1a3a6b', cursor: 'pointer', fontSize: 13, marginLeft: 4 }}>
-              {expanded ? 'Less' : 'More'}
+          <div style={{ marginBottom: 10 }}>
+            <button
+              onClick={() => setExpanded(e => !e)}
+              style={{ background: 'none', border: 'none', color: '#1a3a6b', cursor: 'pointer', fontSize: 12, padding: 0, fontWeight: 500 }}
+            >
+              {expanded ? 'Hide abstract ▲' : 'Show abstract ▼'}
             </button>
+            {expanded && (
+              <div style={{ marginTop: 8, padding: '10px 14px', background: '#f7f9fc', borderRadius: 8, fontSize: 13, color: '#5a6a8a', lineHeight: 1.7 }}>
+                {paper.abstract}
+              </div>
+            )}
           </div>
         )}
 
