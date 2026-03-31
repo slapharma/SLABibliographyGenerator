@@ -6,10 +6,19 @@ import NewBibliographyModal from '../components/NewBibliographyModal'
 
 export default function BibliographiesPage() {
   const [bibs, setBibs] = useState<Bibliography[]>([])
+  const [activeTag, setActiveTag] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
+
+  const allTags = [...new Set(
+    bibs.flatMap(b => (b.tags ?? '').split(',').map(t => t.trim()).filter(Boolean))
+  )].sort()
+
+  const displayedBibs = activeTag
+    ? bibs.filter(b => (b.tags ?? '').split(',').map(t => t.trim()).includes(activeTag))
+    : bibs
 
   const load = async () => {
     setLoading(true)
@@ -63,11 +72,29 @@ export default function BibliographiesPage() {
         </button>
       </div>
 
+      {allTags.length > 0 && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+          {allTags.map(tag => (
+            <button
+              key={tag}
+              onClick={() => setActiveTag(t => t === tag ? null : tag)}
+              style={{
+                padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none',
+                background: activeTag === tag ? '#1a3a6b' : '#f0f4ff',
+                color: activeTag === tag ? '#fff' : '#1a3a6b',
+              }}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
+
       {loading ? (
         <div style={{ textAlign: 'center', padding: 60, color: '#9aa5bf', fontSize: 15 }}>Loading...</div>
       ) : (
         <div className="bib-grid">
-          {bibs.map(bib => (
+          {displayedBibs.map(bib => (
             <div
               key={bib.id}
               onClick={() => navigate(`/bibliographies/${bib.id}`)}
@@ -76,7 +103,20 @@ export default function BibliographiesPage() {
               onMouseLeave={e => (e.currentTarget.style.borderColor = '#dde3ef')}
             >
               <div style={{ fontFamily: '"Montserrat", system-ui, sans-serif', fontSize: 18, color: '#1a2035', marginBottom: 8, lineHeight: 1.3 }}>{bib.name}</div>
-              {bib.description && <div style={{ fontSize: 13, color: '#7a8aaa', marginBottom: 6, lineHeight: 1.6 }}>{bib.description}</div>}
+              {/* Truncated description */}
+              {bib.description && (
+                <div style={{ fontSize: 13, color: '#7a8aaa', marginBottom: 6, lineHeight: 1.5 }}>
+                  {bib.description.length > 80 ? bib.description.slice(0, 80) + '…' : bib.description}
+                </div>
+              )}
+              {/* Tag chips */}
+              {bib.tags && (
+                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 8 }}>
+                  {bib.tags.split(',').map(t => t.trim()).filter(Boolean).map(tag => (
+                    <span key={tag} style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 600, background: '#f0f4ff', color: '#1a3a6b' }}>{tag}</span>
+                  ))}
+                </div>
+              )}
               {bib.creatorName && <div style={{ fontSize: 12, color: '#9aa5bf', marginBottom: 14 }}>Created by {bib.creatorName}</div>}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #eef1f7', marginTop: 'auto' }}>
                 <div style={{ fontSize: 14, color: '#1a3a6b', fontWeight: 600 }}>{Number(bib.paperCount)} paper{Number(bib.paperCount) !== 1 ? 's' : ''}</div>
@@ -94,7 +134,7 @@ export default function BibliographiesPage() {
           ))}
 
           {/* Empty state / Add card */}
-          {bibs.length === 0 && (
+          {displayedBibs.length === 0 && (
             <div
               onClick={() => setShowModal(true)}
               style={{ border: '1.5px dashed #c8d4e8', borderRadius: 12, padding: 22, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 140, color: '#b0bccc' }}
