@@ -50,14 +50,19 @@ export interface Bibliography {
   name: string
   description: string
   creatorName: string
+  tags: string            // comma-separated, e.g. "regulatory,ibd"
+  shareToken: string | null
+  isShared: boolean
   createdAt: string
   updatedAt: string
   paperCount: number
 }
 
 export interface BibliographyPaperRow {
-  rowId: number   // bibliography_papers.id — needed for DELETE
+  rowId: number
   paper: Paper
+  note: string        // annotation text, empty string when unset
+  addedAt: string     // ISO timestamp from bibliography_papers.added_at
 }
 
 export interface BibliographyWithPapers extends Bibliography {
@@ -69,6 +74,7 @@ export interface SavedSearch {
   name: string
   params: SearchParams
   createdAt: string
+  lastResultIds: string[] // DOIs or source:externalId keys from last run
 }
 
 export interface HistoryEntry {
@@ -77,3 +83,5 @@ export interface HistoryEntry {
   resultCount: number
   searchedAt: string
 }
+
+export type CitationStyle = 'vancouver' | 'apa' | 'harvard'
