@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import type { BibliographyWithPapers, BibliographyPaperRow, CitationStyle } from '../types'
+import type { BibliographyWithPapers, BibliographyPaperRow, CitationStyle, Paper } from '../types'
+import SourcePanel from '../components/SourcePanel'
 import { getBibliography, removePaperFromBibliography, updateBibliography, enableBibliographySharing, disableBibliographySharing } from '../lib/api'
 import { exportBibliographyRowsToExcel } from '../lib/export'
 import { formatCitation } from '../lib/citations'
@@ -16,6 +17,7 @@ export default function BibliographyDetailPage() {
   const [bib, setBib] = useState<BibliographyWithPapers | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [panelPaper, setPanelPaper] = useState<Paper | null>(null)
 
   // Filter state
   const [filterSource, setFilterSource] = useState('')
@@ -410,9 +412,10 @@ export default function BibliographyDetailPage() {
         </div>
       ) : (
         displayedRows.map(row => (
-          <PaperRow key={row.rowId} row={row} onRemove={handleRemove} citationStyle={citationStyle} />
+          <PaperRow key={row.rowId} row={row} onRemove={handleRemove} citationStyle={citationStyle} onViewSource={setPanelPaper} />
         ))
       )}
+      <SourcePanel paper={panelPaper} onClose={() => setPanelPaper(null)} />
     </div>
   )
 }

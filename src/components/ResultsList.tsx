@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { SourceResult, Bibliography, Paper } from '../types'
+import type { SourceResult, Bibliography, Paper, BibliographyType } from '../types'
 import { useWindowWidth } from '../hooks/useWindowWidth'
 import ResultCard from './ResultCard'
 import { exportToExcel } from '../lib/export'
@@ -13,11 +13,15 @@ interface Props {
   onAddToBibliography: (bibliographyId: number, paper: Paper) => Promise<void>
   onBibliographyCreated: (bib: Bibliography) => void
   lastResultIds: string[]
+  onViewSource: (paper: Paper) => void
+  searchNotes: Record<string, string>
+  onNoteChange: (paperId: string, note: string) => void
+  bibliographyType: BibliographyType
 }
 
 const PAGE_SIZE_OPTIONS = [50, 100, 300]
 
-export default function ResultsList({ results, totalCount, bibliographies, onAddToBibliography, onBibliographyCreated, lastResultIds }: Props) {
+export default function ResultsList({ results, totalCount, bibliographies, onAddToBibliography, onBibliographyCreated, lastResultIds, onViewSource, searchNotes, onNoteChange, bibliographyType }: Props) {
   const isMobile = useWindowWidth() < 768
   const allPapers = results.flatMap(r => r.papers)
   const errors = results.filter(r => r.error)
@@ -220,6 +224,10 @@ export default function ResultsList({ results, totalCount, bibliographies, onAdd
             isSelected={selectedIds.has(paper.id)}
             onToggle={() => toggleId(paper.id)}
             isNew={isNew}
+            onViewSource={onViewSource}
+            note={searchNotes[paper.id] ?? ''}
+            onNoteChange={(note) => onNoteChange(paper.id, note)}
+            bibliographyType={bibliographyType}
           />
         )
       })}

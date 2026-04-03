@@ -5,6 +5,7 @@ import { searchAll, listBibliographies, createSavedSearch, addPaperToBibliograph
 import SearchForm from '../components/SearchForm'
 import ResultsList from '../components/ResultsList'
 import type { Paper } from '../types'
+import SourcePanel from '../components/SourcePanel'
 
 export default function SearchPage() {
   const location = useLocation()
@@ -19,6 +20,9 @@ export default function SearchPage() {
   const [searchParams] = useSearchParams()
   const [lastResultIds, setLastResultIds] = useState<string[]>([])
   const [autoRunDone, setAutoRunDone] = useState(false)
+  const [panelPaper, setPanelPaper] = useState<Paper | null>(null)
+  const [searchNotes, setSearchNotes] = useState<Record<string, string>>({})
+  const [currentParams, setCurrentParams] = useState<SearchParams | null>(null)
 
   useEffect(() => {
     const id = parseInt(searchParams.get('savedId') ?? '0')
@@ -46,6 +50,7 @@ export default function SearchPage() {
   }, [])
 
   const handleSearch = async (params: SearchParams, runForSavedId?: number) => {
+    setCurrentParams(params)
     setIsLoading(true)
     setError(null)
     try {
@@ -83,7 +88,7 @@ export default function SearchPage() {
   }
 
   const handleAddToBibliography = async (bibliographyId: number, paper: Paper) => {
-    await addPaperToBibliography(bibliographyId, paper)
+    await addPaperToBibliography(bibliographyId, paper, currentParams ?? undefined)
   }
 
   const handleBibliographyCreated = useCallback(async () => {
@@ -132,8 +137,14 @@ export default function SearchPage() {
           onAddToBibliography={handleAddToBibliography}
           onBibliographyCreated={handleBibliographyCreated}
           lastResultIds={lastResultIds}
+          onViewSource={setPanelPaper}
+          searchNotes={searchNotes}
+          onNoteChange={(paperId, note) => setSearchNotes(prev => ({ ...prev, [paperId]: note }))}
+          bibliographyType={currentParams?.bibliographyType ?? 'clinical'}
         />
       )}
+
+      <SourcePanel paper={panelPaper} onClose={() => setPanelPaper(null)} />
 
       {/* Save search modal */}
       {saveModalOpen && (
