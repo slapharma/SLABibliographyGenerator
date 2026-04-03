@@ -1,9 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
-import type { SearchParams } from '../types'
+import type { SearchParams, BibliographyType } from '../types'
 import SourceSelector from './SourceSelector'
 import { useWindowWidth } from '../hooks/useWindowWidth'
 
 const PAPER_TYPE_OPTIONS = ['RCT', 'Systematic Review', 'Meta-Analysis', 'Observational', 'Case Report', 'Review', 'Clinical Trial']
+
+const BIB_TYPE_OPTIONS: { value: BibliographyType; label: string; description: string }[] = [
+  { value: 'clinical',         label: 'Clinical Papers',        description: 'RCTs, reviews, case reports' },
+  { value: 'guidelines',       label: 'Consensus Guidelines',   description: 'Clinical guidelines & recommendations' },
+  { value: 'health-economics', label: 'Health Economics',       description: 'Cost-effectiveness, QALY, HTA' },
+  { value: 'prevalence',       label: 'Indication Prevalence',  description: 'Epidemiology, burden of disease' },
+]
 
 const TODAY = new Date().toISOString().slice(0, 10)
 const FIVE_YEARS_AGO = `${new Date().getFullYear() - 5}-01-01`
@@ -17,16 +24,22 @@ interface Props {
 
 export default function SearchForm({ onSearch, onSave, initialParams, isLoading }: Props) {
   const isMobile = useWindowWidth() < 768
-  const [params, setParams] = useState<SearchParams>({
+
+  const [bibliographyType, setBibliographyType] = useState<BibliographyType>(
+    initialParams?.bibliographyType ?? 'clinical'
+  )
+  const [params, setParams] = useState<Omit<SearchParams, 'bibliographyType'>>({
     indication: initialParams?.indication ?? '',
     keywords: initialParams?.keywords ?? '',
     paperType: initialParams?.paperType ?? '',
     dateFrom: initialParams?.dateFrom ?? FIVE_YEARS_AGO,
     dateTo: initialParams?.dateTo ?? TODAY,
     sources: initialParams?.sources ?? [],
+    country: initialParams?.country ?? '',
+    author: initialParams?.author ?? '',
+    negativeKeywords: initialParams?.negativeKeywords ?? '',
   })
 
-  // Local state for multi-select paper types
   const [selectedPaperTypes, setSelectedPaperTypes] = useState<string[]>(() => {
     if (initialParams?.paperType) {
       return initialParams.paperType.split(',').map(s => s.trim()).filter(Boolean)
@@ -34,7 +47,7 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
     return []
   })
 
-  const set = (key: keyof SearchParams) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+  const set = (key: keyof typeof params) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setParams(p => ({ ...p, [key]: e.target.value }))
 
   const [paperTypeOpen, setPaperTypeOpen] = useState(false)
@@ -58,6 +71,7 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
 
   const buildParams = (): SearchParams => ({
     ...params,
+    bibliographyType,
     paperType: selectedPaperTypes.join(','),
   })
 
@@ -71,92 +85,122 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
     fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em',
   }
 
+  const showCountry = bibliographyType !== 'clinical'
+
   return (
     <div style={{ background: '#fff', border: '1px solid #dde3ef', borderRadius: 12, padding: 24, marginBottom: 24, boxShadow: '0 1px 6px rgba(26,42,74,0.06)' }}>
       <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#9aa5bf', marginBottom: 18, fontWeight: 600 }}>
         Search Parameters
       </div>
 
+      {/* Bibliography Type — full width */}
+      <div style={{ marginBottom: 20 }}>
+        <label style={labelStyle}>Bibliography Type</label>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {BIB_TYPE_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setBibliographyType(opt.value)}
+              style={{
+                padding: '8px 16px', borderRadius: 8, border: `1.5px solid ${bibliographyType === opt.value ? '#1a3a6b' : '#dde3ef'}`,
+                background: bibliographyType === opt.value ? '#1a3a6b' : '#f7f9fc',
+                color: bibliographyType === opt.value ? '#fff' : '#5a6a8a',
+                fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
+              }}
+              title={opt.description}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Row: Indication + Keywords + Author + Country/PaperType + DateRange + NegKeywords */}
       <div className="form-grid-2" style={{ marginBottom: 20 }}>
         <div>
           <label style={labelStyle}>Indication / Condition</label>
-          <input style={inputStyle} value={params.indication} onChange={set('indication')} placeholder="e.g. hypertension" />
+          <input style={inputStyle} value={params.indication} onChange={set('indication')} placeholder="e.g. Crohn's disease" />
         </div>
         <div>
           <label style={labelStyle}>Keywords</label>
-          <input style={inputStyle} value={params.keywords} onChange={set('keywords')} placeholder="e.g. ACE inhibitor treatment" />
+          <input style={inputStyle} value={params.keywords} onChange={set('keywords')} placeholder="e.g. biologic therapy" />
         </div>
-        <div ref={paperTypeRef} style={{ position: 'relative' }}>
-          <label style={labelStyle}>Paper Type</label>
-          <button
-            type="button"
-            onClick={() => setPaperTypeOpen(o => !o)}
-            style={{
-              ...inputStyle, textAlign: 'left', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              color: selectedPaperTypes.length ? '#1a2035' : '#9aa5bf',
-            }}
-          >
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-              {selectedPaperTypes.length === 0
-                ? 'Any type'
-                : selectedPaperTypes.length === 1
-                  ? selectedPaperTypes[0]
-                  : `${selectedPaperTypes.length} types selected`}
-            </span>
-            <span style={{ marginLeft: 8, fontSize: 11, color: '#9aa5bf' }}>{paperTypeOpen ? '▲' : '▼'}</span>
-          </button>
-          {paperTypeOpen && (
-            <div style={{
-              position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 50,
-              background: '#fff', border: '1.5px solid #dde3ef', borderRadius: 8,
-              boxShadow: '0 4px 16px rgba(26,42,74,0.12)', padding: '6px 0',
-            }}>
-              {PAPER_TYPE_OPTIONS.map(type => {
-                const checked = selectedPaperTypes.includes(type)
-                return (
-                  <label
-                    key={type}
-                    style={{
+
+        {/* Author */}
+        <div>
+          <label style={labelStyle}>Author</label>
+          <input style={inputStyle} value={params.author ?? ''} onChange={set('author')} placeholder="e.g. Smith J" />
+        </div>
+
+        {/* Country — only for non-clinical types */}
+        {showCountry ? (
+          <div>
+            <label style={labelStyle}>Country</label>
+            <input style={inputStyle} value={params.country ?? ''} onChange={set('country')} placeholder="e.g. United Kingdom" />
+          </div>
+        ) : (
+          /* Paper Type — shown for clinical */
+          <div ref={paperTypeRef} style={{ position: 'relative' }}>
+            <label style={labelStyle}>Paper Type</label>
+            <button
+              type="button"
+              onClick={() => setPaperTypeOpen(o => !o)}
+              style={{
+                ...inputStyle, textAlign: 'left', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                color: selectedPaperTypes.length ? '#1a2035' : '#9aa5bf',
+              }}
+            >
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                {selectedPaperTypes.length === 0 ? 'Any type' : selectedPaperTypes.length === 1 ? selectedPaperTypes[0] : `${selectedPaperTypes.length} types selected`}
+              </span>
+              <span style={{ marginLeft: 8, fontSize: 11, color: '#9aa5bf' }}>{paperTypeOpen ? '▲' : '▼'}</span>
+            </button>
+            {paperTypeOpen && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 50,
+                background: '#fff', border: '1.5px solid #dde3ef', borderRadius: 8,
+                boxShadow: '0 4px 16px rgba(26,42,74,0.12)', padding: '6px 0',
+              }}>
+                {PAPER_TYPE_OPTIONS.map(type => {
+                  const checked = selectedPaperTypes.includes(type)
+                  return (
+                    <label key={type} style={{
                       display: 'flex', alignItems: 'center', gap: 10,
                       padding: '9px 14px', cursor: 'pointer', fontSize: 14,
                       color: checked ? '#1a2035' : '#5a6a8a',
                       background: checked ? '#f0f4ff' : 'transparent',
                       fontWeight: checked ? 600 : 400,
-                    }}
-                    onMouseEnter={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = '#f7f9fc' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = checked ? '#f0f4ff' : 'transparent' }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => togglePaperType(type)}
-                      style={{ accentColor: '#1a3a6b', width: 15, height: 15, cursor: 'pointer' }}
-                    />
-                    {type}
-                  </label>
-                )
-              })}
-              {selectedPaperTypes.length > 0 && (
-                <div style={{ borderTop: '1px solid #eee', padding: '6px 14px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPaperTypes([])}
-                    style={{ fontSize: 12, color: '#9aa5bf', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                  >
-                    Clear selection
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+                    }}>
+                      <input type="checkbox" checked={checked} onChange={() => togglePaperType(type)} style={{ accentColor: '#1a3a6b', width: 15, height: 15, cursor: 'pointer' }} />
+                      {type}
+                    </label>
+                  )
+                })}
+                {selectedPaperTypes.length > 0 && (
+                  <div style={{ borderTop: '1px solid #eee', padding: '6px 14px' }}>
+                    <button type="button" onClick={() => setSelectedPaperTypes([])} style={{ fontSize: 12, color: '#9aa5bf', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear selection</button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Date Range */}
         <div>
           <label style={labelStyle}>Date Range</label>
           <div style={{ display: 'flex', gap: 10 }}>
             <input style={{ ...inputStyle }} type="date" value={params.dateFrom} onChange={set('dateFrom')} />
             <input style={{ ...inputStyle }} type="date" value={params.dateTo} onChange={set('dateTo')} />
           </div>
+        </div>
+
+        {/* Negative Keywords — full width */}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={labelStyle}>Negative Keywords <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(comma-separated — multi-word phrases supported, e.g. "case report, animal study")</span></label>
+          <input style={inputStyle} value={params.negativeKeywords ?? ''} onChange={set('negativeKeywords')} placeholder="e.g. animal, mouse, rat, in vitro" />
         </div>
       </div>
 
