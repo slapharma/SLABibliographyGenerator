@@ -25,6 +25,8 @@ export interface Paper {
   citationCount?: number  // Semantic Scholar only
 }
 
+export type BibliographyType = 'clinical' | 'guidelines' | 'health-economics' | 'prevalence'
+
 export interface SearchParams {
   indication: string
   keywords: string
@@ -32,6 +34,10 @@ export interface SearchParams {
   dateFrom: string
   dateTo: string
   sources: Source[]
+  bibliographyType: BibliographyType   // default 'clinical'
+  country?: string                      // shown for all types except 'clinical'
+  author?: string                       // search by author name
+  negativeKeywords?: string             // comma-separated terms to exclude
 }
 
 export interface SourceResult {
@@ -63,6 +69,7 @@ export interface BibliographyPaperRow {
   paper: Paper
   note: string        // annotation text, empty string when unset
   addedAt: string     // ISO timestamp from bibliography_papers.added_at
+  searchParams?: SearchParams  // search context used when paper was added
 }
 
 export interface BibliographyWithPapers extends Bibliography {
