@@ -18,6 +18,7 @@ export const bibliographyPapers = pgTable('bibliography_papers', {
   bibliographyId: integer('bibliography_id').notNull().references(() => bibliographies.id, { onDelete: 'cascade' }),
   paperData: jsonb('paper_data').notNull(),
   addedAt: timestamp('added_at').defaultNow().notNull(),
+  searchParams: jsonb('search_params'),
 })
 
 export const savedSearches = pgTable('saved_searches', {
@@ -96,5 +97,6 @@ export async function migrate() {
   await db.execute(`ALTER TABLE bibliographies ADD COLUMN IF NOT EXISTS share_token TEXT`)
   await db.execute(`ALTER TABLE bibliographies ADD COLUMN IF NOT EXISTS is_shared BOOLEAN NOT NULL DEFAULT false`)
   await db.execute(`ALTER TABLE saved_searches ADD COLUMN IF NOT EXISTS last_result_ids JSONB NOT NULL DEFAULT '[]'`)
+  await db.execute(`ALTER TABLE bibliography_papers ADD COLUMN IF NOT EXISTS search_params JSONB`)
   _migrated = true
 }

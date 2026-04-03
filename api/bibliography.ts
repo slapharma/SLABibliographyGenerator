@@ -21,6 +21,7 @@ export default async function handler(req: Request): Promise<Response> {
       paper: r.paperData,
       note: (r as any).note ?? '',
       addedAt: r.addedAt!.toISOString(),
+      searchParams: r.searchParams ?? undefined,
     }))
     return json({
       ...bib,

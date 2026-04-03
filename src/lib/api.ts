@@ -51,10 +51,10 @@ export const deleteBibliography = (id: number) =>
   req<void>(`/bibliography?id=${id}`, { method: 'DELETE' })
 
 // ── Bibliography Papers ───────────────────────────────────
-export const addPaperToBibliography = (bibliographyId: number, paper: Paper) =>
+export const addPaperToBibliography = (bibliographyId: number, paper: Paper, searchParams?: SearchParams) =>
   req<void>('/bibliography-papers', {
     method: 'POST',
-    body: JSON.stringify({ bibliographyId, paper }),
+    body: JSON.stringify({ bibliographyId, paper, searchParams }),
   })
 
 export const removePaperFromBibliography = (bibliographyId: number, paperId: number) =>
