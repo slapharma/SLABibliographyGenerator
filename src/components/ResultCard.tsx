@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import type { Paper, Bibliography } from '../types'
+import type { Paper, Bibliography, BibliographyType } from '../types'
 import { SOURCE_COLORS, SOURCE_LABELS } from '../lib/sourceColors'
 import { createBibliography } from '../lib/api'
 import { useWindowWidth } from '../hooks/useWindowWidth'
+import { extractConclusion } from '../lib/conclusion'
 
 interface Props {
   paper: Paper
@@ -12,9 +13,16 @@ interface Props {
   isSelected: boolean
   onToggle: () => void
   isNew?: boolean
+  onViewSource: (paper: Paper) => void
+  note: string
+  onNoteChange: (note: string) => void
+  bibliographyType: BibliographyType
 }
 
-export default function ResultCard({ paper, bibliographies, onAddToBibliography, onBibliographyCreated, isSelected, onToggle, isNew }: Props) {
+export default function ResultCard({
+  paper, bibliographies, onAddToBibliography, onBibliographyCreated,
+  isSelected, onToggle, isNew, onViewSource, note, onNoteChange, bibliographyType,
+}: Props) {
   const isMobile = useWindowWidth() < 768
   const [expanded, setExpanded] = useState(false)
   const [selectedBibId, setSelectedBibId] = useState<number | '' | '__new__'>('')
@@ -23,6 +31,9 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
   const [newBibName, setNewBibName] = useState('')
   const [newBibCreator, setNewBibCreator] = useState('')
   const [creatingBib, setCreatingBib] = useState(false)
+  const [noteOpen, setNoteOpen] = useState(false)
+
+  const conclusion = bibliographyType === 'clinical' ? extractConclusion(paper.abstract) : undefined
 
   const handleAdd = async () => {
     if (!selectedBibId) return
@@ -100,12 +111,17 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
           {paper.doi && ` · DOI: ${paper.doi}`}
         </div>
 
+        {/* Conclusion highlight for Clinical Papers */}
+        {conclusion && (
+          <div style={{ margin: '0 0 10px', padding: '8px 12px', background: '#f0f7ff', borderLeft: '3px solid #1a3a6b', borderRadius: '0 6px 6px 0', fontSize: 13, color: '#1a2035', lineHeight: 1.6 }}>
+            <span style={{ fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#1a3a6b', display: 'block', marginBottom: 4 }}>Conclusion</span>
+            {conclusion}
+          </div>
+        )}
+
         {paper.abstract && (
           <div style={{ marginBottom: 10 }}>
-            <button
-              onClick={() => setExpanded(e => !e)}
-              style={{ background: 'none', border: 'none', color: '#1a3a6b', cursor: 'pointer', fontSize: 12, padding: 0, fontWeight: 500 }}
-            >
+            <button onClick={() => setExpanded(e => !e)} style={{ background: 'none', border: 'none', color: '#1a3a6b', cursor: 'pointer', fontSize: 12, padding: 0, fontWeight: 500 }}>
               {expanded ? 'Hide abstract ▲' : 'Show abstract ▼'}
             </button>
             {expanded && (
@@ -114,6 +130,24 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
               </div>
             )}
           </div>
+        )}
+
+        {/* Note input */}
+        {noteOpen && (
+          <div style={{ marginBottom: 10 }}>
+            <input
+              type="text"
+              value={note}
+              onChange={e => onNoteChange(e.target.value)}
+              placeholder="Add a note for this paper..."
+              maxLength={500}
+              autoFocus
+              style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #dde3ef', borderRadius: 6, fontSize: 13, fontFamily: 'inherit', boxSizing: 'border-box', outline: 'none' }}
+            />
+          </div>
+        )}
+        {note && !noteOpen && (
+          <div style={{ fontSize: 12, color: '#9aa5bf', fontStyle: 'italic', marginBottom: 8 }}>📝 {note}</div>
         )}
 
         <div style={{ display: 'flex', gap: 7, marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -139,23 +173,27 @@ export default function ResultCard({ paper, bibliographies, onAddToBibliography,
         </div>
 
         <div style={{ display: 'flex', gap: 8, alignItems: isMobile ? 'flex-start' : 'center', flexWrap: 'wrap', flexDirection: isMobile ? 'column' : 'row' }}>
-          <a href={paper.url} target="_blank" rel="noopener noreferrer" style={{
-            padding: '6px 12px', borderRadius: 6, fontSize: 13, border: '1.5px solid #c8d4e8',
-            background: '#fff', color: '#3a5a9a', fontWeight: 500, textDecoration: 'none',
-          }}>
+          {/* View Source → opens panel */}
+          <button
+            onClick={() => onViewSource(paper)}
+            style={{ padding: '6px 12px', borderRadius: 6, fontSize: 13, border: '1.5px solid #c8d4e8', background: '#fff', color: '#3a5a9a', fontWeight: 500, cursor: 'pointer' }}
+          >
             View Source ↗
-          </a>
+          </button>
 
-          {/* Always show add section */}
+          {/* Note toggle */}
+          <button
+            onClick={() => setNoteOpen(o => !o)}
+            style={{ padding: '6px 12px', borderRadius: 6, fontSize: 13, border: '1.5px solid #dde3ef', background: '#fff', color: '#7a8aaa', fontWeight: 500, cursor: 'pointer' }}
+          >
+            {note ? '📝 Note' : '✏️ Add note'}
+          </button>
+
           <select
             value={selectedBibId}
             onChange={e => {
               const val = e.target.value
-              if (val === '__new__') {
-                setSelectedBibId('__new__')
-              } else {
-                setSelectedBibId(val ? Number(val) : '')
-              }
+              setSelectedBibId(val === '__new__' ? '__new__' : val ? Number(val) : '')
             }}
             style={{ padding: '5px 10px', borderRadius: 6, border: '1.5px solid #dde3ef', fontSize: 13, color: '#5a6a8a', background: '#f7f9fc', width: isMobile ? '100%' : 'auto' }}
           >
