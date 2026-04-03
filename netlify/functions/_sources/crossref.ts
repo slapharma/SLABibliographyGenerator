@@ -1,14 +1,23 @@
 import type { SearchParams, Paper } from './types'
+import { buildBaseQuery, appendAuthor, appendCountry, buildNotClause } from './queryBuilder'
+
 export async function searchCrossRef(params: SearchParams): Promise<Paper[]> {
-  const query = [params.indication, params.keywords].filter(Boolean).join(' ')
-  const url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=1000&filter=from-pub-date:${params.dateFrom},until-pub-date:${params.dateTo}&mailto=info@slapharma.com`
+  let query = buildBaseQuery(params, ' ')
+  query = appendAuthor(query, params)
+  query = appendCountry(query, params)
+  query = query + buildNotClause(params)
+
+  const authorParam = params.author?.trim()
+    ? `&query.author=${encodeURIComponent(params.author.trim())}`
+    : ''
+  const url = `https://api.crossref.org/works?query=${encodeURIComponent(query)}${authorParam}&rows=1000&filter=from-pub-date:${params.dateFrom},until-pub-date:${params.dateTo}&mailto=info@slapharma.com`
   const res = await fetch(url)
   if (!res.ok) return []
   const data = await res.json()
   return (data.message?.items ?? [])
     .map((item: any): Paper | null => {
       const doi = item.DOI
-      if (!doi) return null  // Skip items without a DOI
+      if (!doi) return null
       const year = item.published?.['date-parts']?.[0]?.[0]
       return {
         id: `crossref:${doi}`,

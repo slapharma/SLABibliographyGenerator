@@ -1,6 +1,12 @@
 import type { SearchParams, Paper } from './types'
+import { buildBaseQuery, buildEuropePMCAuthorClause, buildEuropePMCCountryClause, buildNotClause } from './queryBuilder'
+
 export async function searchEuropePMC(params: SearchParams): Promise<Paper[]> {
-  const query = [params.indication, params.keywords].filter(Boolean).join(' AND ')
+  const query = buildBaseQuery(params)
+    + buildEuropePMCAuthorClause(params)
+    + buildEuropePMCCountryClause(params)
+    + buildNotClause(params)
+
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(query)}&format=json&pageSize=1000&fromDate=${params.dateFrom}&toDate=${params.dateTo}`
   const res = await fetch(url)
   if (!res.ok) return []

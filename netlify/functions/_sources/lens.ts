@@ -1,14 +1,19 @@
 import type { SearchParams, Paper } from './types'
+import { buildBaseQuery, appendAuthor, appendCountry, buildNotClause } from './queryBuilder'
 
 export async function searchLens(params: SearchParams): Promise<Paper[]> {
   const key = process.env.LENS_API_KEY
   if (!key) return []
 
-  const query = [params.indication, params.keywords].filter(Boolean).join(' ')
+  let queryStr = buildBaseQuery(params)
+  queryStr = appendAuthor(queryStr, params)
+  queryStr = appendCountry(queryStr, params)
+  queryStr = queryStr + buildNotClause(params)
+
   const body = {
     query: {
       bool: {
-        must: [{ query_string: { query } }],
+        must: [{ query_string: { query: queryStr } }],
         filter: [
           { range: { year_published: { gte: parseInt(params.dateFrom.slice(0, 4)), lte: parseInt(params.dateTo.slice(0, 4)) } } }
         ],

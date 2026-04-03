@@ -1,6 +1,12 @@
 import type { SearchParams, Paper } from './types'
+import { buildBaseQuery, appendAuthor, appendCountry, buildNotClause } from './queryBuilder'
+
 export async function searchSemanticScholar(params: SearchParams): Promise<Paper[]> {
-  const query = [params.indication, params.keywords].filter(Boolean).join(' ')
+  let query = buildBaseQuery(params)
+  query = appendAuthor(query, params)
+  query = appendCountry(query, params)
+  query = query + buildNotClause(params)
+
   const url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=100&fields=title,authors,year,journal,externalIds,abstract,citationCount,publicationTypes`
   const headers: Record<string, string> = {}
   if (process.env.SEMANTIC_SCHOLAR_KEY) headers['x-api-key'] = process.env.SEMANTIC_SCHOLAR_KEY

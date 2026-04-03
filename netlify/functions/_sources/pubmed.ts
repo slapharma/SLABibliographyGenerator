@@ -1,14 +1,18 @@
-// netlify/functions/_sources/pubmed.ts
 import type { SearchParams, Paper } from './types'
+import { buildBaseQuery, buildPubMedPaperTypeClause, buildPubMedAuthorClause, buildPubMedCountryClause, buildNotClause } from './queryBuilder'
 
 const BASE = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils'
 const KEY = process.env.PUBMED_API_KEY ? `&api_key=${process.env.PUBMED_API_KEY}` : ''
 
 export async function searchPubMed(params: SearchParams): Promise<Paper[]> {
-  const query = buildQuery(params)
+  const query = buildBaseQuery(params)
+    + buildPubMedPaperTypeClause(params)
+    + buildPubMedAuthorClause(params)
+    + buildPubMedCountryClause(params)
+    + buildNotClause(params)
+
   const minDate = params.dateFrom.replace(/-/g, '/')
   const maxDate = params.dateTo.replace(/-/g, '/')
-
   const searchUrl = `${BASE}/esearch.fcgi?db=pubmed&term=${encodeURIComponent(query)}&retmax=200&datetype=pdat&mindate=${minDate}&maxdate=${maxDate}&retmode=json${KEY}`
   const searchRes = await fetch(searchUrl)
   if (!searchRes.ok) return []
@@ -36,21 +40,4 @@ export async function searchPubMed(params: SearchParams): Promise<Paper[]> {
       type: params.paperType || undefined,
     }
   }).filter(p => p.title !== 'Unknown Title')
-}
-
-function buildQuery(params: SearchParams): string {
-  const parts: string[] = []
-  if (params.indication) parts.push(params.indication)
-  if (params.keywords) parts.push(params.keywords)
-  if (params.paperType) {
-    const typeMap: Record<string, string> = {
-      'RCT': 'randomized controlled trial[pt]',
-      'Systematic Review': 'systematic review[pt]',
-      'Meta-Analysis': 'meta-analysis[pt]',
-      'Observational': 'observational study[pt]',
-    }
-    const mapped = typeMap[params.paperType]
-    if (mapped) parts.push(mapped)
-  }
-  return parts.join(' AND ')
 }

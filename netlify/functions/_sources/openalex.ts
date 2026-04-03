@@ -1,6 +1,12 @@
 import type { SearchParams, Paper } from './types'
+import { buildBaseQuery, appendAuthor, appendCountry, buildNotClause } from './queryBuilder'
+
 export async function searchOpenAlex(params: SearchParams): Promise<Paper[]> {
-  const query = [params.indication, params.keywords].filter(Boolean).join(' ')
+  let query = buildBaseQuery(params, ' ')
+  query = appendAuthor(query, params)
+  query = appendCountry(query, params)
+  query = query + buildNotClause(params)
+
   const url = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per-page=200&filter=publication_year:${params.dateFrom.slice(0,4)}-${params.dateTo.slice(0,4)}&mailto=info@slapharma.com`
   const res = await fetch(url)
   if (!res.ok) return []
@@ -17,6 +23,7 @@ export async function searchOpenAlex(params: SearchParams): Promise<Paper[]> {
     abstract: w.abstract_inverted_index ? rebuildAbstract(w.abstract_inverted_index) : undefined,
   }))
 }
+
 function rebuildAbstract(inv: Record<string, number[]>): string {
   const words: string[] = []
   for (const [word, positions] of Object.entries(inv)) {
