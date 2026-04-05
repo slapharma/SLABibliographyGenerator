@@ -85,9 +85,12 @@ export function buildPubMedAuthorClause(params: SearchParams): string {
   return params.author?.trim() ? ` AND ${params.author.trim()}[au]` : ''
 }
 
-/** PubMed affiliation/country field tag */
+/** PubMed affiliation/country field tag — supports comma-separated multiple countries */
 export function buildPubMedCountryClause(params: SearchParams): string {
-  return params.country?.trim() ? ` AND ${params.country.trim()}[ad]` : ''
+  const countries = params.country?.split(',').map(c => c.trim()).filter(Boolean) ?? []
+  if (countries.length === 0) return ''
+  const clauses = countries.map(c => `${c}[ad]`)
+  return clauses.length === 1 ? ` AND ${clauses[0]}` : ` AND (${clauses.join(' OR ')})`
 }
 
 /** EuropePMC author syntax */
@@ -95,14 +98,21 @@ export function buildEuropePMCAuthorClause(params: SearchParams): string {
   return params.author?.trim() ? ` AND AUTH:${params.author.trim()}` : ''
 }
 
-/** EuropePMC country syntax */
+/** EuropePMC country syntax — supports comma-separated multiple countries */
 export function buildEuropePMCCountryClause(params: SearchParams): string {
-  return params.country?.trim() ? ` AND COUNTRY:"${params.country.trim()}"` : ''
+  const countries = params.country?.split(',').map(c => c.trim()).filter(Boolean) ?? []
+  if (countries.length === 0) return ''
+  const clauses = countries.map(c => `COUNTRY:"${c}"`)
+  return clauses.length === 1 ? ` AND ${clauses[0]}` : ` AND (${clauses.join(' OR ')})`
 }
 
-/** Generic: append country as a plain search term */
+/** Generic: append country as plain search term(s) — supports comma-separated multiple countries */
 export function appendCountry(query: string, params: SearchParams): string {
-  return params.country?.trim() ? `${query} ${params.country.trim()}` : query
+  const countries = params.country?.split(',').map(c => c.trim()).filter(Boolean) ?? []
+  if (countries.length === 0) return query
+  return countries.length === 1
+    ? `${query} ${countries[0]}`
+    : `${query} (${countries.join(' OR ')})`
 }
 
 /** Generic: append author as a plain search term */

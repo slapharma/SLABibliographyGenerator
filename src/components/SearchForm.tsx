@@ -5,6 +5,31 @@ import { useWindowWidth } from '../hooks/useWindowWidth'
 
 const PAPER_TYPE_OPTIONS = ['RCT', 'Systematic Review', 'Meta-Analysis', 'Observational', 'Case Report', 'Review', 'Clinical Trial']
 
+const UN_COUNTRIES = [
+  'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda','Argentina','Armenia','Australia',
+  'Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin',
+  'Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi',
+  'Cabo Verde','Cambodia','Cameroon','Canada','Central African Republic','Chad','Chile','China','Colombia',
+  'Comoros','Congo','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Djibouti','Dominica',
+  'Dominican Republic','DR Congo','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia',
+  'Eswatini','Ethiopia','Fiji','Finland','France','Gabon','Gambia','Georgia','Germany','Ghana','Greece',
+  'Grenada','Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti','Honduras','Hungary','Iceland','India',
+  'Indonesia','Iran','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya',
+  'Kiribati','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein',
+  'Lithuania','Luxembourg','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands',
+  'Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco','Mongolia','Montenegro','Morocco',
+  'Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria',
+  'North Korea','North Macedonia','Norway','Oman','Pakistan','Palau','Palestine','Panama','Papua New Guinea',
+  'Paraguay','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia','Rwanda',
+  'Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Samoa','San Marino',
+  'Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore',
+  'Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Korea','South Sudan','Spain',
+  'Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria','Tajikistan','Tanzania','Thailand',
+  'Timor-Leste','Togo','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Tuvalu','Uganda',
+  'Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Uzbekistan','Vanuatu',
+  'Venezuela','Vietnam','Yemen','Zambia','Zimbabwe',
+]
+
 const BIB_TYPE_OPTIONS: { value: BibliographyType; label: string; description: string }[] = [
   { value: 'clinical',         label: 'Clinical Papers',        description: 'RCTs, reviews, case reports' },
   { value: 'guidelines',       label: 'Consensus Guidelines',   description: 'Clinical guidelines & recommendations' },
@@ -49,6 +74,16 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
     return []
   })
 
+  const [selectedCountries, setSelectedCountries] = useState<string[]>(() => {
+    if (initialParams?.country) {
+      return initialParams.country.split(',').map(s => s.trim()).filter(Boolean)
+    }
+    return []
+  })
+  const [countryOpen, setCountryOpen] = useState(false)
+  const [countrySearch, setCountrySearch] = useState('')
+  const countryRef = useRef<HTMLDivElement>(null)
+
   const set = (key: keyof typeof params) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setParams(p => ({ ...p, [key]: e.target.value }))
 
@@ -59,6 +94,10 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
     const handler = (e: MouseEvent) => {
       if (paperTypeRef.current && !paperTypeRef.current.contains(e.target as Node)) {
         setPaperTypeOpen(false)
+      }
+      if (countryRef.current && !countryRef.current.contains(e.target as Node)) {
+        setCountryOpen(false)
+        setCountrySearch('')
       }
     }
     document.addEventListener('mousedown', handler)
@@ -71,6 +110,12 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
     )
   }
 
+  const toggleCountry = (country: string) => {
+    setSelectedCountries(prev =>
+      prev.includes(country) ? prev.filter(c => c !== country) : [...prev, country]
+    )
+  }
+
   const buildParams = (): SearchParams => {
     const indicationStr = indicationAlternates.length > 0
       ? `(${[params.indication, ...indicationAlternates].filter(Boolean).join(' OR ')})`
@@ -80,6 +125,7 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
       indication: indicationStr,
       bibliographyType,
       paperType: selectedPaperTypes.join(','),
+      country: selectedCountries.join(','),
       // Clear keywords/author for non-clinical (they're hidden in the UI)
       keywords: bibliographyType === 'clinical' ? params.keywords : '',
       author: bibliographyType === 'clinical' ? params.author : '',
@@ -171,9 +217,62 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
 
         {/* Country — only for non-clinical types */}
         {showCountry ? (
-          <div>
+          <div ref={countryRef} style={{ position: 'relative' }}>
             <label style={labelStyle}>Country</label>
-            <input style={inputStyle} value={params.country ?? ''} onChange={set('country')} placeholder="e.g. United Kingdom" />
+            <button
+              type="button"
+              onClick={() => setCountryOpen(o => !o)}
+              style={{
+                ...inputStyle, textAlign: 'left', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                color: selectedCountries.length ? '#1a2035' : '#9aa5bf',
+              }}
+            >
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                {selectedCountries.length === 0 ? 'Any country' : selectedCountries.length === 1 ? selectedCountries[0] : `${selectedCountries.length} countries selected`}
+              </span>
+              <span style={{ marginLeft: 8, fontSize: 11, color: '#9aa5bf' }}>{countryOpen ? '▲' : '▼'}</span>
+            </button>
+            {countryOpen && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 50,
+                background: '#fff', border: '1.5px solid #dde3ef', borderRadius: 8,
+                boxShadow: '0 4px 16px rgba(26,42,74,0.12)', display: 'flex', flexDirection: 'column',
+              }}>
+                <div style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>
+                  <input
+                    autoFocus
+                    placeholder="Search countries..."
+                    value={countrySearch}
+                    onChange={e => setCountrySearch(e.target.value)}
+                    onClick={e => e.stopPropagation()}
+                    style={{ width: '100%', border: '1.5px solid #dde3ef', borderRadius: 6, padding: '7px 10px', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                  />
+                </div>
+                <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+                  {UN_COUNTRIES.filter(c => c.toLowerCase().includes(countrySearch.toLowerCase())).map(country => {
+                    const checked = selectedCountries.includes(country)
+                    return (
+                      <label key={country} style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '8px 14px', cursor: 'pointer', fontSize: 13,
+                        color: checked ? '#1a2035' : '#5a6a8a',
+                        background: checked ? '#f0f4ff' : 'transparent',
+                        fontWeight: checked ? 600 : 400,
+                      }}>
+                        <input type="checkbox" checked={checked} onChange={() => toggleCountry(country)} style={{ accentColor: '#1a3a6b', width: 14, height: 14, cursor: 'pointer' }} />
+                        {country}
+                      </label>
+                    )
+                  })}
+                </div>
+                {selectedCountries.length > 0 && (
+                  <div style={{ borderTop: '1px solid #eee', padding: '6px 14px' }}>
+                    <button type="button" onClick={() => setSelectedCountries([])} style={{ fontSize: 12, color: '#9aa5bf', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear selection</button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           /* Paper Type — shown for clinical */
