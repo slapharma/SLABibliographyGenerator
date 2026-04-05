@@ -40,6 +40,8 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
     negativeKeywords: initialParams?.negativeKeywords ?? '',
   })
 
+  const [indicationAlternates, setIndicationAlternates] = useState<string[]>([])
+
   const [selectedPaperTypes, setSelectedPaperTypes] = useState<string[]>(() => {
     if (initialParams?.paperType) {
       return initialParams.paperType.split(',').map(s => s.trim()).filter(Boolean)
@@ -69,11 +71,20 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
     )
   }
 
-  const buildParams = (): SearchParams => ({
-    ...params,
-    bibliographyType,
-    paperType: selectedPaperTypes.join(','),
-  })
+  const buildParams = (): SearchParams => {
+    const indicationStr = indicationAlternates.length > 0
+      ? `(${[params.indication, ...indicationAlternates].filter(Boolean).join(' OR ')})`
+      : params.indication
+    return {
+      ...params,
+      indication: indicationStr,
+      bibliographyType,
+      paperType: selectedPaperTypes.join(','),
+      // Clear keywords/author for non-clinical (they're hidden in the UI)
+      keywords: bibliographyType === 'clinical' ? params.keywords : '',
+      author: bibliographyType === 'clinical' ? params.author : '',
+    }
+  }
 
   const inputStyle: React.CSSProperties = {
     width: '100%', background: '#f7f9fc', border: '1.5px solid #dde3ef',
@@ -118,20 +129,45 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
 
       {/* Row: Indication + Keywords + Author + Country/PaperType + DateRange + NegKeywords */}
       <div className="form-grid-2" style={{ marginBottom: 20 }}>
-        <div>
+        <div style={{ gridColumn: bibliographyType !== 'clinical' ? '1 / -1' : undefined }}>
           <label style={labelStyle}>Indication / Condition</label>
           <input style={inputStyle} value={params.indication} onChange={set('indication')} placeholder="e.g. Crohn's disease" />
-        </div>
-        <div>
-          <label style={labelStyle}>Keywords</label>
-          <input style={inputStyle} value={params.keywords} onChange={set('keywords')} placeholder="e.g. biologic therapy" />
+          {/* Indication alternates */}
+          <div style={{ marginTop: 6 }}>
+            {indicationAlternates.map((alt, i) => (
+              <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#eef3ff', color: '#1a3a6b', borderRadius: 16, padding: '3px 10px 3px 12px', fontSize: 12, fontWeight: 500, marginRight: 6, marginBottom: 4 }}>
+                {alt}
+                <button type="button" onClick={() => setIndicationAlternates(prev => prev.filter((_, j) => j !== i))}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7a8aaa', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+              </span>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                const alt = prompt('Enter alternate spelling or synonym (e.g. "Crohn disease" or "CD"):')
+                if (alt?.trim()) setIndicationAlternates(prev => [...prev, alt.trim()])
+              }}
+              style={{ background: 'none', border: 'none', color: '#1a3a6b', cursor: 'pointer', fontSize: 12, padding: '2px 0', fontWeight: 500 }}
+            >
+              ＋ Add alternate spelling
+            </button>
+          </div>
         </div>
 
-        {/* Author */}
-        <div>
-          <label style={labelStyle}>Author</label>
-          <input style={inputStyle} value={params.author ?? ''} onChange={set('author')} placeholder="e.g. Smith J" />
-        </div>
+        {bibliographyType === 'clinical' && (
+          <div>
+            <label style={labelStyle}>Keywords</label>
+            <input style={inputStyle} value={params.keywords} onChange={set('keywords')} placeholder="e.g. biologic therapy" />
+          </div>
+        )}
+
+        {/* Author — clinical only */}
+        {bibliographyType === 'clinical' && (
+          <div>
+            <label style={labelStyle}>Author</label>
+            <input style={inputStyle} value={params.author ?? ''} onChange={set('author')} placeholder="e.g. Smith J" />
+          </div>
+        )}
 
         {/* Country — only for non-clinical types */}
         {showCountry ? (
