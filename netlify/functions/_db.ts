@@ -18,6 +18,7 @@ export const bibliographyPapers = pgTable('bibliography_papers', {
   bibliographyId: integer('bibliography_id').notNull().references(() => bibliographies.id, { onDelete: 'cascade' }),
   paperData: jsonb('paper_data').notNull(),
   addedAt: timestamp('added_at').defaultNow().notNull(),
+  note: text('note').notNull().default(''),
   searchParams: jsonb('search_params'),
 })
 

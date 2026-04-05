@@ -88,7 +88,7 @@ export default function SearchPage() {
   }
 
   const handleAddToBibliography = async (bibliographyId: number, paper: Paper) => {
-    await addPaperToBibliography(bibliographyId, paper, currentParams ?? undefined)
+    await addPaperToBibliography(bibliographyId, paper, currentParams ?? undefined, searchNotes[paper.id])
   }
 
   const handleBibliographyCreated = useCallback(async () => {

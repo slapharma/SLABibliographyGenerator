@@ -13,13 +13,13 @@ export default async function handler(req: Request): Promise<Response> {
 
   if (req.method === 'POST') {
     const body = await req.json().catch(() => null)
-    const { bibliographyId, paper, searchParams } = body ?? {}
+    const { bibliographyId, paper, note, searchParams } = body ?? {}
     if (!bibliographyId || typeof bibliographyId !== 'number' || !paper) {
       return new Response('Missing bibliographyId or paper', { status: 400 })
     }
     await db.update(bibliographies).set({ updatedAt: new Date() }).where(eq(bibliographies.id, bibliographyId))
     const [added] = await db.insert(bibliographyPapers)
-      .values({ bibliographyId, paperData: paper, searchParams: searchParams ?? null })
+      .values({ bibliographyId, paperData: paper, note: note ?? '', searchParams: searchParams ?? null })
       .returning()
     return json(added, 201)
   }
