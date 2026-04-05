@@ -1,19 +1,71 @@
 import type { SearchParams } from './types'
 
-const BIB_TYPE_TERMS: Record<string, string> = {
-  guidelines: '(guidelines OR "consensus statement" OR recommendation OR "clinical practice guideline")',
-  'health-economics': '(cost-effectiveness OR "health economics" OR QALY OR "economic evaluation")',
-  prevalence: '(prevalence OR incidence OR epidemiology OR "burden of disease")',
+/** Title-specific keyword sets per bibliography type.
+ *  For clinical type, title filtering is not applied (free-form search).
+ */
+const TITLE_TERMS: Record<string, string[]> = {
+  guidelines: [
+    'consensus guidelines',
+    'management treatment',
+    'prescribing guidelines',
+    'treatment guidelines',
+    'position statement',
+  ],
+  'health-economics': [
+    'health economics',
+    'cost to health care',
+    'healthcare burden',
+    'economic burden',
+  ],
+  prevalence: [
+    'prevalence',
+    'frequency',
+    'affected individuals',
+    'percentage of patients',
+    'widespread',
+    'disease burden',
+    'case frequency',
+  ],
 }
 
-/** Core topic query: indication + keywords + bibliographyType modifier */
+/** Core topic query: indication + keywords (keywords only for clinical type).
+ *  indication may already be an OR-expanded string like (disease OR alternate).
+ */
 export function buildBaseQuery(params: SearchParams, sep = ' AND '): string {
   const parts: string[] = []
   if (params.indication) parts.push(params.indication)
-  if (params.keywords) parts.push(params.keywords)
-  const bibTerms = BIB_TYPE_TERMS[params.bibliographyType ?? '']
-  if (bibTerms) parts.push(bibTerms)
+  if (params.bibliographyType === 'clinical' && params.keywords) parts.push(params.keywords)
   return parts.join(sep)
+}
+
+/** PubMed title-field clause for non-clinical types.
+ *  e.g. AND ("treatment guidelines"[ti] OR "position statement"[ti] OR ...)
+ */
+export function buildPubMedTitleTerms(params: SearchParams): string {
+  const terms = TITLE_TERMS[params.bibliographyType]
+  if (!terms) return ''
+  const clauses = terms.map(t => `"${t}"[ti]`)
+  return ` AND (${clauses.join(' OR ')})`
+}
+
+/** EuropePMC title-field clause for non-clinical types.
+ *  e.g. AND (TITLE:"treatment guidelines" OR TITLE:"position statement" OR ...)
+ */
+export function buildEuropePMCTitleTerms(params: SearchParams): string {
+  const terms = TITLE_TERMS[params.bibliographyType]
+  if (!terms) return ''
+  const clauses = terms.map(t => `TITLE:"${t}"`)
+  return ` AND (${clauses.join(' OR ')})`
+}
+
+/** Generic title terms for sources without field-specific syntax.
+ *  Appends as additional keywords — most APIs weight title matches highly.
+ */
+export function buildGenericTitleTerms(params: SearchParams): string {
+  const terms = TITLE_TERMS[params.bibliographyType]
+  if (!terms) return ''
+  const clauses = terms.map(t => `"${t}"`)
+  return ` (${clauses.join(' OR ')})`
 }
 
 /** NOT clause from negativeKeywords.

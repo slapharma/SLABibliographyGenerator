@@ -1,5 +1,5 @@
 import type { SearchParams, Paper } from './types'
-import { buildBaseQuery, appendAuthor, appendCountry, buildNotClause } from './queryBuilder'
+import { buildBaseQuery, appendAuthor, appendCountry, buildGenericTitleTerms, buildNotClause } from './queryBuilder'
 
 export async function searchLens(params: SearchParams): Promise<Paper[]> {
   const key = process.env.LENS_API_KEY
@@ -8,7 +8,7 @@ export async function searchLens(params: SearchParams): Promise<Paper[]> {
   let queryStr = buildBaseQuery(params)
   queryStr = appendAuthor(queryStr, params)
   queryStr = appendCountry(queryStr, params)
-  queryStr = queryStr + buildNotClause(params)
+  queryStr = queryStr + buildGenericTitleTerms(params) + buildNotClause(params)
 
   const body = {
     query: {

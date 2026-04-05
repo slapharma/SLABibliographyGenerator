@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildBaseQuery, buildNotClause, buildPubMedAuthorClause, buildPubMedCountryClause, buildPubMedPaperTypeClause, appendCountry } from '../../../netlify/functions/_sources/queryBuilder'
+import { buildBaseQuery, buildNotClause, buildPubMedAuthorClause, buildPubMedCountryClause, buildPubMedPaperTypeClause, buildPubMedTitleTerms, buildEuropePMCTitleTerms, buildGenericTitleTerms, appendCountry } from '../../../netlify/functions/_sources/queryBuilder'
 import type { SearchParams } from '../../../netlify/functions/_sources/types'
 
 const base: SearchParams = {
@@ -16,17 +16,14 @@ describe('buildBaseQuery', () => {
   it('joins indication and keywords', () => {
     expect(buildBaseQuery(base)).toBe("Crohn's disease AND biologic")
   })
-  it('appends guidelines terms for guidelines type', () => {
-    const p = { ...base, bibliographyType: 'guidelines' as const }
-    expect(buildBaseQuery(p)).toContain('guidelines OR')
+  it('excludes keywords for non-clinical type', () => {
+    expect(buildBaseQuery({ ...base, bibliographyType: 'guidelines' })).toBe("Crohn's disease")
   })
-  it('appends health-economics terms', () => {
-    const p = { ...base, bibliographyType: 'health-economics' as const }
-    expect(buildBaseQuery(p)).toContain('cost-effectiveness')
+  it('excludes keywords for health-economics type', () => {
+    expect(buildBaseQuery({ ...base, bibliographyType: 'health-economics' })).toBe("Crohn's disease")
   })
-  it('appends prevalence terms', () => {
-    const p = { ...base, bibliographyType: 'prevalence' as const }
-    expect(buildBaseQuery(p)).toContain('prevalence')
+  it('excludes keywords for prevalence type', () => {
+    expect(buildBaseQuery({ ...base, bibliographyType: 'prevalence' })).toBe("Crohn's disease")
   })
   it('omits empty indication', () => {
     expect(buildBaseQuery({ ...base, indication: '' })).toBe('biologic')
@@ -88,5 +85,48 @@ describe('buildPubMedPaperTypeClause', () => {
   })
   it('ignores unknown paper types', () => {
     expect(buildPubMedPaperTypeClause({ ...base, paperType: 'Unknown' })).toBe('')
+  })
+})
+
+describe('buildPubMedTitleTerms', () => {
+  it('returns empty for clinical type', () => {
+    expect(buildPubMedTitleTerms(base)).toBe('')
+  })
+  it('returns PubMed title clause for guidelines', () => {
+    const result = buildPubMedTitleTerms({ ...base, bibliographyType: 'guidelines' })
+    expect(result).toContain('"treatment guidelines"[ti]')
+    expect(result).toContain('"position statement"[ti]')
+    expect(result).toMatch(/^ AND \(/)
+  })
+  it('returns PubMed title clause for health-economics', () => {
+    const result = buildPubMedTitleTerms({ ...base, bibliographyType: 'health-economics' })
+    expect(result).toContain('"health economics"[ti]')
+  })
+  it('returns PubMed title clause for prevalence', () => {
+    const result = buildPubMedTitleTerms({ ...base, bibliographyType: 'prevalence' })
+    expect(result).toContain('"prevalence"[ti]')
+    expect(result).toContain('"disease burden"[ti]')
+  })
+})
+
+describe('buildEuropePMCTitleTerms', () => {
+  it('returns empty for clinical type', () => {
+    expect(buildEuropePMCTitleTerms(base)).toBe('')
+  })
+  it('returns EuropePMC TITLE clause for guidelines', () => {
+    const result = buildEuropePMCTitleTerms({ ...base, bibliographyType: 'guidelines' })
+    expect(result).toContain('TITLE:"treatment guidelines"')
+    expect(result).toMatch(/^ AND \(/)
+  })
+})
+
+describe('buildGenericTitleTerms', () => {
+  it('returns empty for clinical type', () => {
+    expect(buildGenericTitleTerms(base)).toBe('')
+  })
+  it('returns quoted terms for guidelines', () => {
+    const result = buildGenericTitleTerms({ ...base, bibliographyType: 'guidelines' })
+    expect(result).toContain('"treatment guidelines"')
+    expect(result).toMatch(/^ \(/)
   })
 })

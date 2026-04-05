@@ -1,5 +1,5 @@
 import type { SearchParams, Paper } from './types'
-import { buildBaseQuery, appendAuthor, appendCountry, buildNotClause } from './queryBuilder'
+import { buildBaseQuery, appendAuthor, appendCountry, buildGenericTitleTerms, buildNotClause } from './queryBuilder'
 
 export async function searchScholar(params: SearchParams): Promise<Paper[]> {
   const key = process.env.SERPAPI_KEY
@@ -8,7 +8,7 @@ export async function searchScholar(params: SearchParams): Promise<Paper[]> {
   let query = buildBaseQuery(params, ' ')
   query = appendAuthor(query, params)
   query = appendCountry(query, params)
-  query = query + buildNotClause(params)
+  query = query + buildGenericTitleTerms(params) + buildNotClause(params)
 
   const url = `https://serpapi.com/search?engine=google_scholar&q=${encodeURIComponent(query)}&as_ylo=${params.dateFrom.slice(0,4)}&as_yhi=${params.dateTo.slice(0,4)}&api_key=${key}&num=20`
   const res = await fetch(url)

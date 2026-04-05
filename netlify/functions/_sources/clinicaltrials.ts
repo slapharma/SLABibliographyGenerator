@@ -1,8 +1,8 @@
 import type { SearchParams, Paper } from './types'
-import { buildBaseQuery, buildNotClause, appendCountry } from './queryBuilder'
+import { buildBaseQuery, buildNotClause, buildGenericTitleTerms, appendCountry } from './queryBuilder'
 
 export async function searchClinicalTrials(params: SearchParams): Promise<Paper[]> {
-  const baseQuery = buildBaseQuery(params, ' ') + buildNotClause(params)
+  const baseQuery = buildBaseQuery(params, ' ') + buildGenericTitleTerms(params) + buildNotClause(params)
   const query = appendCountry(baseQuery, params)
   const locationParam = params.country?.trim()
     ? `&query.locn=${encodeURIComponent(params.country.trim())}`

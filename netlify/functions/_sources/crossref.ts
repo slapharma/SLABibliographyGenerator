@@ -1,11 +1,11 @@
 import type { SearchParams, Paper } from './types'
-import { buildBaseQuery, appendAuthor, appendCountry, buildNotClause } from './queryBuilder'
+import { buildBaseQuery, appendAuthor, appendCountry, buildGenericTitleTerms, buildNotClause } from './queryBuilder'
 
 export async function searchCrossRef(params: SearchParams): Promise<Paper[]> {
   let query = buildBaseQuery(params, ' ')
   query = appendAuthor(query, params)
   query = appendCountry(query, params)
-  query = query + buildNotClause(params)
+  query = query + buildGenericTitleTerms(params) + buildNotClause(params)
 
   const authorParam = params.author?.trim()
     ? `&query.author=${encodeURIComponent(params.author.trim())}`

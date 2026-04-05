@@ -1,11 +1,11 @@
 import type { SearchParams, Paper } from './types'
-import { buildBaseQuery, appendAuthor, appendCountry, buildNotClause } from './queryBuilder'
+import { buildBaseQuery, appendAuthor, appendCountry, buildGenericTitleTerms, buildNotClause } from './queryBuilder'
 
 export async function searchSemanticScholar(params: SearchParams): Promise<Paper[]> {
   let query = buildBaseQuery(params)
   query = appendAuthor(query, params)
   query = appendCountry(query, params)
-  query = query + buildNotClause(params)
+  query = query + buildGenericTitleTerms(params) + buildNotClause(params)
 
   const url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=100&fields=title,authors,year,journal,externalIds,abstract,citationCount,publicationTypes`
   const headers: Record<string, string> = {}

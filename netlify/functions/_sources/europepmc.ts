@@ -1,8 +1,9 @@
 import type { SearchParams, Paper } from './types'
-import { buildBaseQuery, buildEuropePMCAuthorClause, buildEuropePMCCountryClause, buildNotClause } from './queryBuilder'
+import { buildBaseQuery, buildEuropePMCAuthorClause, buildEuropePMCCountryClause, buildEuropePMCTitleTerms, buildNotClause } from './queryBuilder'
 
 export async function searchEuropePMC(params: SearchParams): Promise<Paper[]> {
   const query = buildBaseQuery(params)
+    + buildEuropePMCTitleTerms(params)
     + buildEuropePMCAuthorClause(params)
     + buildEuropePMCCountryClause(params)
     + buildNotClause(params)
