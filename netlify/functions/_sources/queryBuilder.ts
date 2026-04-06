@@ -85,12 +85,12 @@ export function buildPubMedAuthorClause(params: SearchParams): string {
   return params.author?.trim() ? ` AND ${params.author.trim()}[au]` : ''
 }
 
-/** PubMed affiliation/country field tag — supports comma-separated multiple countries */
+/** PubMed country: searches both affiliation [ad] and place of publication [pl] for better coverage */
 export function buildPubMedCountryClause(params: SearchParams): string {
   const countries = params.country?.split(',').map(c => c.trim()).filter(Boolean) ?? []
   if (countries.length === 0) return ''
-  const clauses = countries.map(c => `${c}[ad]`)
-  return clauses.length === 1 ? ` AND ${clauses[0]}` : ` AND (${clauses.join(' OR ')})`
+  const clauses = countries.flatMap(c => [`${c}[ad]`, `${c}[pl]`])
+  return ` AND (${clauses.join(' OR ')})`
 }
 
 /** EuropePMC author syntax */
@@ -130,6 +130,9 @@ export function buildPubMedPaperTypeClause(params: SearchParams): string {
     'Systematic Review': 'systematic review[pt]',
     'Meta-Analysis': 'meta-analysis[pt]',
     'Observational': 'observational study[pt]',
+    'Case Report': 'case reports[pt]',
+    'Review': 'review[pt]',
+    'Clinical Trial': 'clinical trial[pt]',
   }
   const types = params.paperType.split(',').map(s => s.trim())
   const clauses = types.map(t => typeMap[t]).filter(Boolean)

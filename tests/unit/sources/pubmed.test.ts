@@ -19,10 +19,12 @@ describe('searchPubMed', () => {
 
   it('maps PubMed fields to Paper interface correctly', async () => {
     vi.mocked(fetch)
+      // 1. esearch
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({ esearchresult: { idlist: ['12345678'] } })
       } as any)
+      // 2. esummary (parallel with efetch)
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
@@ -38,6 +40,11 @@ describe('searchPubMed', () => {
             }
           }
         })
+      } as any)
+      // 3. efetch (parallel with esummary) — return empty XML, abstract optional
+      .mockResolvedValueOnce({
+        ok: true,
+        text: async () => '',
       } as any)
 
     const results = await searchPubMed({

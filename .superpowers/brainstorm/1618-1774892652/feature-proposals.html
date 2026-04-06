@@ -1,0 +1,110 @@
+<h2>Proposed Features & Improvements</h2>
+<p class="subtitle">Select all that you'd like to include. Based on your answers, the top 3 are pre-highlighted.</p>
+
+<div class="options" data-multiselect>
+
+  <div class="option selected" data-choice="annotations" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <h3>Paper Annotations & Notes <span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px">HIGH PRIORITY</span></h3>
+      <p>Add a private note to any paper inside a bibliography — e.g. "Key study for Section 3", "Contradicts claims in Smith 2021". Notes visible only inside the bibliography view, shown inline below the paper title.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Per-paper text field</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Saved to database</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Included in Excel export</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option selected" data-choice="sharing" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <h3>Shareable Read-Only Links <span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px">HIGH PRIORITY</span></h3>
+      <p>Each bibliography gets a public URL (e.g. <code>/share/abc123</code>) that anyone can open in a browser — no login needed. Shows the full paper list, source badges, abstracts, and DOI links. Read-only, no editing.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">One-click copy link</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">No login required for viewers</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Toggle on/off per bibliography</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option selected" data-choice="citations" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <h3>Formatted Citation Export <span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px">HIGH PRIORITY</span></h3>
+      <p>Copy or export citations in standard formats. Per-paper copy button for quick paste into documents. Full bibliography export in chosen format.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Vancouver</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">APA 7th</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Harvard</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">One-click copy per paper</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Export full list as .txt</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="abstract" onclick="toggleSelect(this)">
+    <div class="letter">4</div>
+    <div class="content">
+      <h3>Inline Abstract Preview</h3>
+      <p>Expand/collapse the abstract directly on a result card or bibliography row without leaving the page. Currently you have to click through to the source URL to read the abstract.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Toggle expand/collapse</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Works on search results + bibliography</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="already-saved" onclick="toggleSelect(this)">
+    <div class="letter">5</div>
+    <div class="content">
+      <h3>"Already Saved" Indicator on Search Results</h3>
+      <p>When a search result is already in one of your bibliographies, show a small badge on the card — "In: IBD 1, Pilonidal Sinus". Prevents duplicate saves and speeds up bibliography building.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">DOI-based matching</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Shows which bibliography it's in</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="pdf-export" onclick="toggleSelect(this)">
+    <div class="letter">6</div>
+    <div class="content">
+      <h3>PDF Export of Bibliography</h3>
+      <p>Export a bibliography as a formatted PDF — title, creator name, date, and numbered reference list. Suitable for attaching to regulatory or medical affairs documents without further formatting work.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">SLA branded header</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Choice of citation format</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Browser print-to-PDF</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="bib-description" onclick="toggleSelect(this)">
+    <div class="letter">7</div>
+    <div class="content">
+      <h3>Bibliography Description & Tags</h3>
+      <p>The database already has a description field but it's not shown in the UI. Surface it on the bibliography card and detail page. Add optional tags (e.g. "regulatory", "IBD", "draft") for filtering on the bibliographies list.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Edit description inline</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Filter bibliographies by tag</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="rerun-saved" onclick="toggleSelect(this)">
+    <div class="letter">8</div>
+    <div class="content">
+      <h3>Re-run Saved Search with One Click</h3>
+      <p>On the Saved Searches page, a "Run now →" button that immediately executes the search and takes you to results — without having to go to the Search page, fill in fields, and click Run. Useful for regular monitoring searches.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">One click to results</span>
+        <span style="background:#f0f4ff;color:#1a3a6b;font-size:11px;padding:3px 8px;border-radius:6px">Adds to history automatically</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p style="margin-top:24px;font-size:13px;color:#7a8aaa">Click to select/deselect. Items 1–3 are pre-selected based on your answers. Let me know your selection in the terminal when ready.</p>

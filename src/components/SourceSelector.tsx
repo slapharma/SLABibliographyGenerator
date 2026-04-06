@@ -10,8 +10,6 @@ const TIER_1: { id: Source; label: string }[] = [
 const TIER_2: { id: Source; label: string }[] = [
   { id: 'semanticscholar', label: 'Semantic Scholar' },
   { id: 'crossref',    label: 'CrossRef' },
-  { id: 'lens',        label: 'Lens.org' },
-  { id: 'openalex',    label: 'OpenAlex' },
 ]
 
 interface Props {

@@ -7,7 +7,11 @@ export async function searchSemanticScholar(params: SearchParams): Promise<Paper
   query = appendCountry(query, params)
   query = query + buildGenericTitleTerms(params) + buildNotClause(params)
 
-  const url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=100&fields=title,authors,year,journal,externalIds,abstract,citationCount,publicationTypes`
+  const limit = process.env.SEMANTIC_SCHOLAR_KEY ? 500 : 100
+  const yearFrom = params.dateFrom.slice(0, 4)
+  const yearTo = params.dateTo.slice(0, 4)
+
+  const url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=${limit}&year=${yearFrom}-${yearTo}&sort=citationCount&fields=title,authors,year,journal,externalIds,abstract,citationCount,publicationTypes`
   const headers: Record<string, string> = {}
   if (process.env.SEMANTIC_SCHOLAR_KEY) headers['x-api-key'] = process.env.SEMANTIC_SCHOLAR_KEY
   const res = await fetch(url, { headers })

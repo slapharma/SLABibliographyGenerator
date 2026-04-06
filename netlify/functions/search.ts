@@ -5,8 +5,6 @@ import { searchEuropePMC } from './_sources/europepmc'
 import { searchClinicalTrials } from './_sources/clinicaltrials'
 import { searchSemanticScholar } from './_sources/semanticscholar'
 import { searchCrossRef } from './_sources/crossref'
-import { searchOpenAlex } from './_sources/openalex'
-import { searchLens } from './_sources/lens'
 import { searchScholar } from './_sources/scholar'
 import type { SearchParams, Source, SourceResult, Paper } from '../../src/types/index'
 
@@ -63,8 +61,6 @@ const HANDLERS: Record<Source, (p: SearchParams) => Promise<any[]>> = {
   clinicaltrials: searchClinicalTrials,
   semanticscholar: searchSemanticScholar,
   crossref: searchCrossRef,
-  openalex: searchOpenAlex,
-  lens: searchLens,
   scholar: searchScholar,
 }
 

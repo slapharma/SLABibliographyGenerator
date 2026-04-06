@@ -4,8 +4,6 @@ export const SOURCE_COLORS: Record<string, { bg: string; text: string }> = {
   clinicaltrials:  { bg: '#e6f9f0', text: '#177a4a' },
   semanticscholar: { bg: '#fff0e6', text: '#a05a00' },
   crossref:        { bg: '#f0f7ee', text: '#2a6a1a' },
-  openalex:        { bg: '#f5f0ff', text: '#5a2aa0' },
-  lens:            { bg: '#fff5f0', text: '#b03a00' },
   scholar:         { bg: '#f3eefe', text: '#6b35c8' },
 }
 
@@ -15,7 +13,5 @@ export const SOURCE_LABELS: Record<string, string> = {
   clinicaltrials: 'ClinicalTrials',
   semanticscholar: 'Semantic Scholar',
   crossref: 'CrossRef',
-  openalex: 'OpenAlex',
-  lens: 'Lens.org',
   scholar: 'Google Scholar',
 }

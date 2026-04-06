@@ -32,3 +32,8 @@ dist-ssr
 
 # Drizzle migrations output
 drizzle/
+
+# Local Netlify folder
+.netlify
+
+.vercel

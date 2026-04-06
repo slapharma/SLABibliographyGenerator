@@ -6,8 +6,6 @@ export type Source =
   | 'clinicaltrials'
   | 'semanticscholar'
   | 'crossref'
-  | 'openalex'
-  | 'lens'
   | 'scholar'
 
 export interface Paper {

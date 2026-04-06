@@ -1,13 +1,35 @@
 import type { SearchParams, Paper } from './types'
-import { buildBaseQuery, buildNotClause, buildGenericTitleTerms, appendCountry } from './queryBuilder'
+import { buildGenericTitleTerms, buildNotClause } from './queryBuilder'
 
 export async function searchClinicalTrials(params: SearchParams): Promise<Paper[]> {
-  const baseQuery = buildBaseQuery(params, ' ') + buildGenericTitleTerms(params) + buildNotClause(params)
-  const query = appendCountry(baseQuery, params)
-  const locationParam = params.country?.trim()
-    ? `&query.locn=${encodeURIComponent(params.country.trim())}`
+  // Use dedicated condition param for indication (more precise than query.term)
+  const condParam = params.indication
+    ? `&query.cond=${encodeURIComponent(params.indication)}`
     : ''
-  const url = `https://clinicaltrials.gov/api/v2/studies?query.term=${encodeURIComponent(query)}&pageSize=1000&format=json${locationParam}`
+
+  // For clinical: keywords in query.term; for non-clinical: title terms in query.term
+  const termParts: string[] = []
+  if (params.bibliographyType === 'clinical' && params.keywords) termParts.push(params.keywords)
+  const titleTerms = buildGenericTitleTerms(params).trim()
+  if (titleTerms) termParts.push(titleTerms)
+  const notClause = buildNotClause(params).trim()
+  if (notClause) termParts.push(notClause)
+  const termParam = termParts.length > 0
+    ? `&query.term=${encodeURIComponent(termParts.join(' '))}`
+    : ''
+
+  // Multi-country: join with OR for location query
+  const countries = params.country?.split(',').map(c => c.trim()).filter(Boolean) ?? []
+  const locationParam = countries.length > 0
+    ? `&query.locn=${encodeURIComponent(countries.join(' OR '))}`
+    : ''
+
+  // For non-clinical types, only return completed studies (more relevant for guidelines/HE/prevalence)
+  const statusParam = params.bibliographyType !== 'clinical'
+    ? '&filter.overallStatus=COMPLETED'
+    : ''
+
+  const url = `https://clinicaltrials.gov/api/v2/studies?format=json&pageSize=200${condParam}${termParam}${locationParam}${statusParam}`
   const res = await fetch(url)
   if (!res.ok) return []
   const data = await res.json()

@@ -1,0 +1,90 @@
+<h2>Design Overview</h2>
+<p class="subtitle">7 features across 4 areas. Review each section and confirm before we move to the spec.</p>
+
+<div class="section">
+  <div class="label">Area 1 — Bibliography Enhancements</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
+
+    <div style="background:#f8faff;border:1.5px solid #dde3ef;border-radius:10px;padding:16px">
+      <div style="font-weight:700;color:#1a2035;margin-bottom:6px">📝 Paper Annotations</div>
+      <p style="font-size:13px;color:#5a6a8a;margin:0">Each row in a bibliography gets an inline "Add note" button. Notes stored in a new <code>note</code> column on <code>bibliography_papers</code>. Shown as grey italic text below the paper title. Editable in-place. Exported in Excel column.</p>
+    </div>
+
+    <div style="background:#f8faff;border:1.5px solid #dde3ef;border-radius:10px;padding:16px">
+      <div style="font-weight:700;color:#1a2035;margin-bottom:6px">📅 Date Added Field</div>
+      <p style="font-size:13px;color:#5a6a8a;margin:0"><code>bibliography_papers.added_at</code> already exists (it's <code>created_at</code>). Surface it in the UI as "Added" column. Add "Date Added" as a sort option and filter range in the bibliography detail filter panel.</p>
+    </div>
+
+    <div style="background:#f8faff;border:1.5px solid #dde3ef;border-radius:10px;padding:16px">
+      <div style="font-weight:700;color:#1a2035;margin-bottom:6px">🏷️ Description & Tags</div>
+      <p style="font-size:13px;color:#5a6a8a;margin:0">Surface the existing <code>description</code> field on bib cards and the detail page (editable inline). Add a <code>tags</code> text column (comma-separated). Tags rendered as coloured chips. Filter bibliographies list by tag.</p>
+    </div>
+
+    <div style="background:#f8faff;border:1.5px solid #dde3ef;border-radius:10px;padding:16px">
+      <div style="font-weight:700;color:#1a2035;margin-bottom:6px">💬 Inline Abstract Preview</div>
+      <p style="font-size:13px;color:#5a6a8a;margin:0">Expand/collapse toggle on every paper row (search results + bibliography). Abstract already exists in the <code>Paper</code> type. No API change needed — pure frontend toggle. Falls back gracefully when abstract is absent.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Area 2 — Export & Sharing</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
+
+    <div style="background:#f8faff;border:1.5px solid #dde3ef;border-radius:10px;padding:16px">
+      <div style="font-weight:700;color:#1a2035;margin-bottom:6px">📋 Citation Formatter</div>
+      <p style="font-size:13px;color:#5a6a8a;margin:0">Client-side formatter — no API. Formats Vancouver, APA 7, Harvard from the data already in the <code>Paper</code> object. Per-paper "Copy citation" button + "Copy all" for the full bibliography. Format selector dropdown (persisted in localStorage).</p>
+    </div>
+
+    <div style="background:#f8faff;border:1.5px solid #dde3ef;border-radius:10px;padding:16px">
+      <div style="font-weight:700;color:#1a2035;margin-bottom:6px">🖨️ PDF Export</div>
+      <p style="font-size:13px;color:#5a6a8a;margin:0">Opens a print-optimised view at <code>/bibliographies/:id/print</code> — SLA logo, bibliography name, creator, date, numbered reference list in chosen citation format. Uses <code>window.print()</code>. No server-side PDF generation needed.</p>
+    </div>
+
+    <div style="background:#f8faff;border:1.5px solid #dde3ef;border-radius:10px;padding:16px">
+      <div style="font-weight:700;color:#1a2035;margin-bottom:6px">🔗 Shareable Link</div>
+      <p style="font-size:13px;color:#5a6a8a;margin:0">Add <code>share_token</code> (UUID) + <code>is_shared</code> boolean to <code>bibliographies</code> table. New public route <code>/share/:token</code> calls a new <code>/api/share/:token</code> Edge function (no auth). Toggle sharing on/off in the bibliography detail page header.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Area 3 — Saved Search Enhancement</div>
+  <div style="background:#f8faff;border:1.5px solid #dde3ef;border-radius:10px;padding:16px;margin-top:12px">
+    <div style="font-weight:700;color:#1a2035;margin-bottom:6px">🔁 Re-run + New Result Highlighting</div>
+    <p style="font-size:13px;color:#5a6a8a;margin:0">
+      "Run now →" button on saved search cards navigates to <code>/search?savedId=X</code>, pre-fills params, and auto-triggers the search. To highlight new results: store the list of paper IDs from the last run in a new <code>last_result_ids</code> JSON column on <code>saved_searches</code>. On re-run, any paper ID not in that list gets a "NEW" badge. After viewing, the stored IDs update automatically.
+    </p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Database changes summary</div>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px">
+    <thead>
+      <tr style="background:#f0f4ff">
+        <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid #dde3ef">Table</th>
+        <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid #dde3ef">New columns</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #f0f2f7">
+        <td style="padding:8px 12px;font-weight:600;color:#1a2035"><code>bibliography_papers</code></td>
+        <td style="padding:8px 12px;color:#5a6a8a"><code>note TEXT DEFAULT ''</code> — paper annotation</td>
+      </tr>
+      <tr style="border-bottom:1px solid #f0f2f7">
+        <td style="padding:8px 12px;font-weight:600;color:#1a2035"><code>bibliographies</code></td>
+        <td style="padding:8px 12px;color:#5a6a8a"><code>tags TEXT DEFAULT ''</code>, <code>share_token TEXT</code>, <code>is_shared BOOLEAN DEFAULT false</code></td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px;font-weight:600;color:#1a2035"><code>saved_searches</code></td>
+        <td style="padding:8px 12px;color:#5a6a8a"><code>last_result_ids JSONB DEFAULT '[]'</code></td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:#9aa5bf;margin-top:8px">All added with ALTER TABLE … ADD COLUMN IF NOT EXISTS — safe to run on existing data.</p>
+</div>
+
+<p style="font-size:13px;color:#7a8aaa;margin-top:8px">Does this all look right? Let me know in the terminal — any changes, or good to write the spec?</p>
