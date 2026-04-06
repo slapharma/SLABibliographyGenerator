@@ -117,9 +117,14 @@ export default function SearchForm({ onSearch, onSave, initialParams, isLoading 
   }
 
   const buildParams = (): SearchParams => {
+    // Quote multi-word phrases so APIs treat them as exact phrases, not separate keywords
+    const quotePhrase = (s: string) => {
+      const t = s.trim()
+      return t.includes(' ') ? `"${t}"` : t
+    }
     const indicationStr = indicationAlternates.length > 0
-      ? `(${[params.indication, ...indicationAlternates].filter(Boolean).join(' OR ')})`
-      : params.indication
+      ? `(${[params.indication, ...indicationAlternates].filter(Boolean).map(quotePhrase).join(' OR ')})`
+      : quotePhrase(params.indication)
     return {
       ...params,
       indication: indicationStr,

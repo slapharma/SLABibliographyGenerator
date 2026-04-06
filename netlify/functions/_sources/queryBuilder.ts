@@ -29,13 +29,33 @@ const TITLE_TERMS: Record<string, string[]> = {
 }
 
 /** Core topic query: indication + keywords (keywords only for clinical type).
- *  indication may already be an OR-expanded string like (disease OR alternate).
+ *  indication may already be an OR-expanded string like ("disease" OR "alternate").
  */
 export function buildBaseQuery(params: SearchParams, sep = ' AND '): string {
   const parts: string[] = []
   if (params.indication) parts.push(params.indication)
   if (params.bibliographyType === 'clinical' && params.keywords) parts.push(params.keywords)
   return parts.join(sep)
+}
+
+/** Applies a PubMed field tag to an indication — handles both single phrases and OR-expanded expressions.
+ *  e.g. "heart failure"[tiab]  or  ("heart failure"[tiab] OR "cardiac failure"[tiab])
+ */
+function applyPubMedFieldTag(indication: string, tag: string): string {
+  if (!indication) return ''
+  if (indication.startsWith('(') && indication.endsWith(')')) {
+    const parts = indication.slice(1, -1).split(/ OR /i).map(p => `${p.trim()}[${tag}]`)
+    return `(${parts.join(' OR ')})`
+  }
+  return `${indication}[${tag}]`
+}
+
+/** PubMed-specific base query: restricts indication to title/abstract [tiab] for precision. */
+export function buildPubMedBaseQuery(params: SearchParams): string {
+  const parts: string[] = []
+  if (params.indication) parts.push(applyPubMedFieldTag(params.indication, 'tiab'))
+  if (params.bibliographyType === 'clinical' && params.keywords) parts.push(params.keywords)
+  return parts.join(' AND ')
 }
 
 /** PubMed title-field clause for non-clinical types.

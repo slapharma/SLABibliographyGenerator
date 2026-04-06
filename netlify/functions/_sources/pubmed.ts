@@ -1,11 +1,11 @@
 import type { SearchParams, Paper } from './types'
-import { buildBaseQuery, buildPubMedPaperTypeClause, buildPubMedAuthorClause, buildPubMedCountryClause, buildPubMedTitleTerms, buildNotClause } from './queryBuilder'
+import { buildPubMedBaseQuery, buildPubMedPaperTypeClause, buildPubMedAuthorClause, buildPubMedCountryClause, buildPubMedTitleTerms, buildNotClause } from './queryBuilder'
 
 const BASE = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils'
 const KEY = process.env.PUBMED_API_KEY ? `&api_key=${process.env.PUBMED_API_KEY}` : ''
 
 export async function searchPubMed(params: SearchParams): Promise<Paper[]> {
-  const query = buildBaseQuery(params)
+  const query = buildPubMedBaseQuery(params)
     + buildPubMedTitleTerms(params)
     + buildPubMedPaperTypeClause(params)
     + buildPubMedAuthorClause(params)
