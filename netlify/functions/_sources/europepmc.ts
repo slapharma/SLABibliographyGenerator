@@ -7,7 +7,7 @@ export async function searchEuropePMC(params: SearchParams): Promise<Paper[]> {
     + buildEuropePMCAuthorClause(params)
     + buildEuropePMCCountryClause(params)
     + buildNotClause(params)
-    + ' AND HAS_ABSTRACT:Y'
+    + (params.bibliographyType === 'clinical' ? ' AND HAS_ABSTRACT:Y' : '')
 
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(query)}&format=json&pageSize=500&sort=cited%20desc&fromDate=${params.dateFrom}&toDate=${params.dateTo}`
   const res = await fetch(url)

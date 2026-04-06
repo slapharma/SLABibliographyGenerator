@@ -58,11 +58,11 @@ describe('buildPubMedCountryClause', () => {
   it('returns empty when no country', () => {
     expect(buildPubMedCountryClause(base)).toBe('')
   })
-  it('returns PubMed [ad] and [pl] tags for single country', () => {
-    expect(buildPubMedCountryClause({ ...base, country: 'United Kingdom' })).toBe(' AND (United Kingdom[ad] OR United Kingdom[pl])')
+  it('returns PubMed [ad] tag for single country', () => {
+    expect(buildPubMedCountryClause({ ...base, country: 'United Kingdom' })).toBe(' AND United Kingdom[ad]')
   })
-  it('returns OR-joined [ad] and [pl] tags for multiple countries', () => {
-    expect(buildPubMedCountryClause({ ...base, country: 'United Kingdom,Germany' })).toBe(' AND (United Kingdom[ad] OR United Kingdom[pl] OR Germany[ad] OR Germany[pl])')
+  it('returns OR-joined [ad] tags for multiple countries', () => {
+    expect(buildPubMedCountryClause({ ...base, country: 'United Kingdom,Germany' })).toBe(' AND (United Kingdom[ad] OR Germany[ad])')
   })
 })
 

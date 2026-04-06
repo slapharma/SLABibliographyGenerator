@@ -38,22 +38,13 @@ export function buildBaseQuery(params: SearchParams, sep = ' AND '): string {
   return parts.join(sep)
 }
 
-/** Applies a PubMed field tag to an indication — handles both single phrases and OR-expanded expressions.
- *  e.g. "heart failure"[tiab]  or  ("heart failure"[tiab] OR "cardiac failure"[tiab])
- */
-function applyPubMedFieldTag(indication: string, tag: string): string {
-  if (!indication) return ''
-  if (indication.startsWith('(') && indication.endsWith(')')) {
-    const parts = indication.slice(1, -1).split(/ OR /i).map(p => `${p.trim()}[${tag}]`)
-    return `(${parts.join(' OR ')})`
-  }
-  return `${indication}[${tag}]`
-}
 
-/** PubMed-specific base query: restricts indication to title/abstract [tiab] for precision. */
+/** PubMed-specific base query: uses indication as-is (phrase-quoted in SearchForm),
+ *  letting PubMed match via MeSH, title, abstract, and all indexed fields.
+ */
 export function buildPubMedBaseQuery(params: SearchParams): string {
   const parts: string[] = []
-  if (params.indication) parts.push(applyPubMedFieldTag(params.indication, 'tiab'))
+  if (params.indication) parts.push(params.indication)
   if (params.bibliographyType === 'clinical' && params.keywords) parts.push(params.keywords)
   return parts.join(' AND ')
 }
@@ -105,12 +96,12 @@ export function buildPubMedAuthorClause(params: SearchParams): string {
   return params.author?.trim() ? ` AND ${params.author.trim()}[au]` : ''
 }
 
-/** PubMed country: searches both affiliation [ad] and place of publication [pl] for better coverage */
+/** PubMed country: affiliation [ad] only, multiple countries always OR-joined */
 export function buildPubMedCountryClause(params: SearchParams): string {
   const countries = params.country?.split(',').map(c => c.trim()).filter(Boolean) ?? []
   if (countries.length === 0) return ''
-  const clauses = countries.flatMap(c => [`${c}[ad]`, `${c}[pl]`])
-  return ` AND (${clauses.join(' OR ')})`
+  const clauses = countries.map(c => `${c}[ad]`)
+  return clauses.length === 1 ? ` AND ${clauses[0]}` : ` AND (${clauses.join(' OR ')})`
 }
 
 /** EuropePMC author syntax */
