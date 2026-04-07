@@ -21,6 +21,10 @@ export async function searchSemanticScholar(params: SearchParams): Promise<Paper
     return []
   }
   const data = await res.json()
+  if (data.error || data.message) {
+    console.error('SemanticScholar API error:', JSON.stringify(data).slice(0, 300))
+    return []
+  }
   return (data.data ?? []).map((p: any): Paper => ({
     id: `semanticscholar:${p.paperId}`,
     source: 'semanticscholar',
