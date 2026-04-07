@@ -17,7 +17,12 @@ export async function searchSemanticScholar(params: SearchParams): Promise<Paper
   if (process.env.SEMANTIC_SCHOLAR_KEY) headers['x-api-key'] = process.env.SEMANTIC_SCHOLAR_KEY
   const res = await fetch(url, { headers })
   if (!res.ok) {
-    console.error(`SemanticScholar error ${res.status}:`, await res.text().catch(() => ''))
+    const body = await res.text().catch(() => '')
+    if (res.status === 429) {
+      // Rate limited — requires API key for reliable access
+      throw new Error('Semantic Scholar rate limit exceeded (429). Add SEMANTIC_SCHOLAR_KEY env var for higher limits.')
+    }
+    console.error(`SemanticScholar error ${res.status}:`, body)
     return []
   }
   const data = await res.json()
