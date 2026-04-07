@@ -176,7 +176,7 @@ export default function ProtocolForm({ onSave, isLoading = false, initialProtoco
         </button>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .protocol-form {
           display: flex;
           flex-direction: column;

@@ -58,7 +58,7 @@ export default function ScreeningReviewDashboard({ decisions, onSaveDecisions, i
     return { total, relevant, irrelevant, lowConfidence }
   }, [localDecisions])
 
-  const handleToggleOverride = (paperId: string, currentDecision: string) => {
+  const handleToggleOverride = (paperId: string, _currentDecision: string) => {
     setLocalDecisions((prev) =>
       prev.map((d) =>
         d.paperId === paperId
@@ -257,7 +257,7 @@ export default function ScreeningReviewDashboard({ decisions, onSaveDecisions, i
                     >
                       ✕ Exclude
                     </button>
-                    {decision.aiDecision !== decision.userDecision && (
+                    {decision.userDecision !== undefined && (
                       <button
                         className={`btn-override ${
                           decision.userDecision === 'override' ? 'active' : ''
@@ -302,7 +302,7 @@ export default function ScreeningReviewDashboard({ decisions, onSaveDecisions, i
         </button>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .screening-dashboard {
           display: flex;
           flex-direction: column;
