@@ -29,7 +29,10 @@ export async function searchClinicalTrials(params: SearchParams): Promise<Paper[
     ? '&filter.overallStatus=COMPLETED'
     : ''
 
-  const url = `https://clinicaltrials.gov/api/v2/studies?format=json&pageSize=200${condParam}${termParam}${locationParam}${statusParam}`
+  // Date filter: clinicaltrials.gov uses YYYYMMDD format
+  const dateParam = `&filter.startDate=RANGE[${params.dateFrom.replace(/-/g, '')},${params.dateTo.replace(/-/g, '')}]`
+
+  const url = `https://clinicaltrials.gov/api/v2/studies?format=json&pageSize=200${condParam}${termParam}${locationParam}${statusParam}${dateParam}`
   const res = await fetch(url)
   if (!res.ok) return []
   const data = await res.json()
