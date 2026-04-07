@@ -6,6 +6,7 @@ const navItems = [
   { to: '/bibliographies', icon: '📚', label: 'Bibliographies' },
   { to: '/saved-searches', icon: '⭐', label: 'Saved' },
   { to: '/history', icon: '🕐', label: 'History' },
+  { to: '/workflow', icon: '⚙️', label: 'Workflow' },
 ]
 
 export default function Layout() {

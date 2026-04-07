@@ -299,6 +299,42 @@ export default function BibliographyDetailPage() {
         </button>
 
         <button
+          onClick={async () => {
+            if (!bib) return
+            try {
+              const res = await fetch(`/api/protocols?bibliographyId=${bib.id}`)
+              const list = await res.json()
+              const protocol = Array.isArray(list) ? list[0] : null
+              if (!protocol) {
+                if (confirm('No protocol defined for this bibliography yet. Create one now?')) {
+                  navigate(`/bibliographies/${bib.id}/protocol`)
+                }
+                return
+              }
+              const papersPayload = displayedRows.map(r => ({
+                id: r.paper.id,
+                title: r.paper.title,
+                doi: r.paper.doi,
+              }))
+              navigate(`/quality/${protocol.id}`, { state: { papers: papersPayload } })
+            } catch (e) {
+              alert(`Failed to launch quality review: ${e instanceof Error ? e.message : e}`)
+            }
+          }}
+          disabled={displayedRows.length === 0}
+          style={{ padding: '10px 18px', border: 'none', borderRadius: 8, background: '#1a2a4a', color: '#fff', fontSize: 13, cursor: 'pointer', fontWeight: 600, opacity: displayedRows.length === 0 ? 0.5 : 1 }}
+        >
+          🧪 Run Quality Review
+        </button>
+
+        <button
+          onClick={() => bib && navigate(`/bibliographies/${bib.id}/protocol`)}
+          style={{ padding: '10px 18px', border: '1.5px solid #dde3ef', borderRadius: 8, background: '#fff', color: '#4a5568', fontSize: 13, cursor: 'pointer', fontWeight: 600 }}
+        >
+          📋 Protocol
+        </button>
+
+        <button
           onClick={() => setFiltersOpen(o => !o)}
           style={{
             padding: '10px 18px', border: '1.5px solid #dde3ef', borderRadius: 8,

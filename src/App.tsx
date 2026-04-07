@@ -8,6 +8,9 @@ import SavedSearchesPage from './pages/SavedSearchesPage'
 import HistoryPage from './pages/HistoryPage'
 import BibliographyPrintPage from './pages/BibliographyPrintPage'
 import SharedBibliographyPage from './pages/SharedBibliographyPage'
+import QualityReviewPage from './pages/QualityReviewPage'
+import WorkflowPage from './pages/WorkflowPage'
+import ProtocolPage from './pages/ProtocolPage'
 
 export default function App() {
   return (
@@ -21,8 +24,11 @@ export default function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/bibliographies" element={<BibliographiesPage />} />
         <Route path="/bibliographies/:id" element={<BibliographyDetailPage />} />
+        <Route path="/bibliographies/:id/protocol" element={<ProtocolPage />} />
         <Route path="/saved-searches" element={<SavedSearchesPage />} />
         <Route path="/history" element={<HistoryPage />} />
+        <Route path="/workflow" element={<WorkflowPage />} />
+        <Route path="/quality/:protocolId" element={<QualityReviewPage />} />
       </Route>
     </Routes>
   )
