@@ -95,9 +95,9 @@ describe('buildPubMedTitleTerms', () => {
   it('returns empty for clinical type', () => {
     expect(buildPubMedTitleTerms(base)).toBe('')
   })
-  it('returns PubMed title clause for guidelines', () => {
+  it('returns PubMed title clause for guidelines — single words unquoted, phrases quoted', () => {
     const result = buildPubMedTitleTerms({ ...base, bibliographyType: 'guidelines' })
-    expect(result).toContain('"treatment guidelines"[ti]')
+    expect(result).toContain('guideline[ti]')
     expect(result).toContain('"position statement"[ti]')
     expect(result).toMatch(/^ AND \(/)
   })
@@ -107,7 +107,7 @@ describe('buildPubMedTitleTerms', () => {
   })
   it('returns PubMed title clause for prevalence', () => {
     const result = buildPubMedTitleTerms({ ...base, bibliographyType: 'prevalence' })
-    expect(result).toContain('"prevalence"[ti]')
+    expect(result).toContain('prevalence[ti]')
     expect(result).toContain('"disease burden"[ti]')
   })
 })
@@ -116,9 +116,10 @@ describe('buildEuropePMCTitleTerms', () => {
   it('returns empty for clinical type', () => {
     expect(buildEuropePMCTitleTerms(base)).toBe('')
   })
-  it('returns EuropePMC TITLE clause for guidelines', () => {
+  it('returns EuropePMC TITLE clause for guidelines — single words unquoted', () => {
     const result = buildEuropePMCTitleTerms({ ...base, bibliographyType: 'guidelines' })
-    expect(result).toContain('TITLE:"treatment guidelines"')
+    expect(result).toContain('TITLE:guideline')
+    expect(result).toContain('TITLE:"position statement"')
     expect(result).toMatch(/^ AND \(/)
   })
 })
@@ -127,9 +128,9 @@ describe('buildGenericTitleTerms', () => {
   it('returns empty for clinical type', () => {
     expect(buildGenericTitleTerms(base)).toBe('')
   })
-  it('returns quoted terms for guidelines', () => {
+  it('includes AND connector and quoted multi-word phrases for guidelines', () => {
     const result = buildGenericTitleTerms({ ...base, bibliographyType: 'guidelines' })
-    expect(result).toContain('"treatment guidelines"')
-    expect(result).toMatch(/^ \(/)
+    expect(result).toContain('"position statement"')
+    expect(result).toMatch(/^ AND \(/)
   })
 })

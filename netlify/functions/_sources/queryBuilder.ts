@@ -5,26 +5,30 @@ import type { SearchParams } from './types'
  */
 const TITLE_TERMS: Record<string, string[]> = {
   guidelines: [
-    'consensus guidelines',
-    'management treatment',
-    'prescribing guidelines',
-    'treatment guidelines',
+    'guideline',
+    'guidelines',
+    'consensus',
     'position statement',
+    'recommendation',
+    'recommendations',
+    'clinical practice',
   ],
   'health-economics': [
     'health economics',
-    'cost to health care',
-    'healthcare burden',
+    'cost-effectiveness',
+    'cost effectiveness',
     'economic burden',
+    'healthcare costs',
+    'budget impact',
+    'cost analysis',
   ],
   prevalence: [
     'prevalence',
-    'frequency',
-    'affected individuals',
-    'percentage of patients',
-    'widespread',
+    'incidence',
+    'epidemiology',
     'disease burden',
-    'case frequency',
+    'burden of disease',
+    'epidemiological',
   ],
 }
 
@@ -50,33 +54,35 @@ export function buildPubMedBaseQuery(params: SearchParams): string {
 }
 
 /** PubMed title-field clause for non-clinical types.
- *  e.g. AND ("treatment guidelines"[ti] OR "position statement"[ti] OR ...)
+ *  Single-word terms use bare [ti] tag; multi-word phrases are quoted.
+ *  e.g. AND (guideline[ti] OR "position statement"[ti] OR ...)
  */
 export function buildPubMedTitleTerms(params: SearchParams): string {
   const terms = TITLE_TERMS[params.bibliographyType]
   if (!terms) return ''
-  const clauses = terms.map(t => `"${t}"[ti]`)
+  const clauses = terms.map(t => t.includes(' ') ? `"${t}"[ti]` : `${t}[ti]`)
   return ` AND (${clauses.join(' OR ')})`
 }
 
 /** EuropePMC title-field clause for non-clinical types.
- *  e.g. AND (TITLE:"treatment guidelines" OR TITLE:"position statement" OR ...)
+ *  Single-word terms unquoted; multi-word phrases quoted.
+ *  e.g. AND (TITLE:guideline OR TITLE:"position statement" OR ...)
  */
 export function buildEuropePMCTitleTerms(params: SearchParams): string {
   const terms = TITLE_TERMS[params.bibliographyType]
   if (!terms) return ''
-  const clauses = terms.map(t => `TITLE:"${t}"`)
+  const clauses = terms.map(t => t.includes(' ') ? `TITLE:"${t}"` : `TITLE:${t}`)
   return ` AND (${clauses.join(' OR ')})`
 }
 
 /** Generic title terms for sources without field-specific syntax.
- *  Appends as additional keywords — most APIs weight title matches highly.
+ *  Includes AND connector. Multi-word phrases quoted, single words bare.
  */
 export function buildGenericTitleTerms(params: SearchParams): string {
   const terms = TITLE_TERMS[params.bibliographyType]
   if (!terms) return ''
-  const clauses = terms.map(t => `"${t}"`)
-  return ` (${clauses.join(' OR ')})`
+  const clauses = terms.map(t => t.includes(' ') ? `"${t}"` : t)
+  return ` AND (${clauses.join(' OR ')})`
 }
 
 /** NOT clause from negativeKeywords.

@@ -2,27 +2,18 @@ import type { SearchParams, Paper } from './types'
 import { buildBaseQuery, appendCountry, buildGenericTitleTerms, buildNotClause } from './queryBuilder'
 
 export async function searchCrossRef(params: SearchParams): Promise<Paper[]> {
-  // Use query.bibliographic for targeted title/abstract/bibliographic field search
+  // Build the main bibliographic query: indication + title terms + country + not-clause
+  // query.title with boolean OR syntax is not supported by CrossRef — all terms go in query.bibliographic
   let bibQuery = buildBaseQuery(params, ' ')
+  bibQuery = bibQuery + buildGenericTitleTerms(params)
   bibQuery = appendCountry(bibQuery, params)
   bibQuery = bibQuery + buildNotClause(params)
-
-  // For non-clinical types, send title terms via query.title (dedicated field — more precise)
-  const titleTerms = buildGenericTitleTerms(params).trim()
-  const titleParam = titleTerms && params.bibliographyType !== 'clinical'
-    ? `&query.title=${encodeURIComponent(titleTerms)}`
-    : ''
-
-  // For clinical, title terms (none expected for clinical) fall back to main query
-  if (titleTerms && params.bibliographyType === 'clinical') {
-    bibQuery = bibQuery + ' ' + titleTerms
-  }
 
   const authorParam = params.author?.trim()
     ? `&query.author=${encodeURIComponent(params.author.trim())}`
     : ''
 
-  const url = `https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(bibQuery)}${titleParam}${authorParam}&rows=1000&sort=score&filter=from-pub-date:${params.dateFrom},until-pub-date:${params.dateTo}&mailto=info@slapharma.com`
+  const url = `https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(bibQuery)}${authorParam}&rows=1000&sort=score&filter=from-pub-date:${params.dateFrom},until-pub-date:${params.dateTo}&mailto=info@slapharma.com`
   const res = await fetch(url)
   if (!res.ok) return []
   const data = await res.json()
