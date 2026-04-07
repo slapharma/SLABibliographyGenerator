@@ -5,13 +5,17 @@ import type { SearchParams } from './types'
  */
 const TITLE_TERMS: Record<string, string[]> = {
   guidelines: [
-    'guideline',
-    'guidelines',
-    'consensus',
+    'consensus guideline',
+    'consensus guidelines',
+    'consensus statement',
+    'clinical guidelines',
+    'consensus recommendations',
     'position statement',
-    'recommendation',
-    'recommendations',
+    'practice guidelines',
+    'expert consensus',
     'clinical practice',
+    'guidelines for treatment',
+    'guidelines for diagnosis',
   ],
   'health-economics': [
     'health economics',
