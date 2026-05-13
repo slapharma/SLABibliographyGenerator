@@ -11,6 +11,7 @@ import SharedBibliographyPage from './pages/SharedBibliographyPage'
 import QualityReviewPage from './pages/QualityReviewPage'
 import WorkflowPage from './pages/WorkflowPage'
 import ProtocolPage from './pages/ProtocolPage'
+import ImportPage from './pages/ImportPage'
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/saved-searches" element={<SavedSearchesPage />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/workflow" element={<WorkflowPage />} />
+        <Route path="/import" element={<ImportPage />} />
         <Route path="/quality/:protocolId" element={<QualityReviewPage />} />
       </Route>
     </Routes>

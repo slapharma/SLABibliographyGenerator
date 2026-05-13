@@ -6,6 +6,7 @@ const navItems = [
   { to: '/bibliographies', icon: '📚', label: 'Bibliographies' },
   { to: '/saved-searches', icon: '⭐', label: 'Saved' },
   { to: '/history', icon: '🕐', label: 'History' },
+  { to: '/import', icon: '📥', label: 'Import' },
   { to: '/workflow', icon: '⚙️', label: 'Workflow' },
 ]
 
