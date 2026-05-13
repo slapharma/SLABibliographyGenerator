@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@netlify/functions": "^3.1.10",
-    "@tailwindcss/vite": "^4.2.1",
+    "@tailwindcss/vite": "^4.3.0",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.7.0",
@@ -33,7 +33,7 @@
     "@types/pdf-parse": "^1.1.4",
     "drizzle-kit": "^0.30.6",
     "jsdom": "^29.0.0",
-    "tailwindcss": "^4.2.1",
+    "tailwindcss": "^4.3.0",
     "typescript": "~5.6.2",
     "vite": "^6.4.1",
     "vitest": "^3.2.4"
