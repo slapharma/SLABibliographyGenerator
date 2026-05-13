@@ -1,4 +1,3 @@
-// netlify/functions/_sources/pdfRetrieval.ts
 //
 // Phase 2: Resolve a paper to plain-text full content for downstream
 // extraction. Strategy (cheapest → most expensive):

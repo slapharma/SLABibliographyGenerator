@@ -1,6 +1,6 @@
 // api/screen.ts — Vercel Edge runtime
 //
-// Phase 1 screening, ported from netlify/functions/screen.ts and fixed to use
+// Phase 1 screening (ported to Vercel edge runtime)
 // drizzle-orm's select/update/eq API (the neon-http driver doesn't expose the
 // `db.query.*` proxy the old handler assumed).
 
@@ -13,12 +13,12 @@ import {
   protocols,
   pipelineExecutions,
   auditLog,
-} from '../netlify/functions/_db'
+} from '../lib/_db'
 import {
   screenPapers,
   createScreeningBatches,
   type Paper,
-} from '../netlify/functions/_sources/screeningEngine'
+} from '../lib/sources/screeningEngine'
 
 const json = (data: any, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })

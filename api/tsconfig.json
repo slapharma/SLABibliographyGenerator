@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023", "DOM"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "noEmit": true,
+    "types": []
+  },
+  "include": ["./**/*.ts", "../lib/**/*.ts"],
+  "exclude": ["../lib/sources/lens.ts", "../lib/sources/openalex.ts"]
+}

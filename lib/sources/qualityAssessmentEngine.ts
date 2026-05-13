@@ -1,4 +1,3 @@
-// netlify/functions/_sources/qualityAssessmentEngine.ts
 //
 // Phase 2: Cochrane RoB 2 risk-of-bias + overall quality scoring.
 //

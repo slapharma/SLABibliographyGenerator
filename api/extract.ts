@@ -9,14 +9,14 @@ import {
   pipelineExecutions,
   extractionResults,
   auditLog,
-} from '../netlify/functions/_db'
+} from '../lib/_db'
 import {
   createExtractionBatches,
   extractFromPapers,
   type ExtractionField,
   type ExtractionPaper,
-} from '../netlify/functions/_sources/extractionEngine'
-import { retrievePapersText } from '../netlify/functions/_sources/pdfRetrieval'
+} from '../lib/sources/extractionEngine'
+import { retrievePapersText } from '../lib/sources/pdfRetrieval'
 
 const json = (data: any, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })
@@ -96,7 +96,7 @@ export default async function handler(req: Request): Promise<Response> {
         const batchResults = await extractFromPapers(batch)
         for (const result of batchResults) {
           processedCount++
-          allResults.push(result)
+          allResults.push(result as any)
           for (const field of result.fields) {
             await db.insert(extractionResults).values({
               executionId,

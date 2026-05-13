@@ -1,6 +1,6 @@
 export const config = { runtime: 'edge' }
 
-import { getDb, migrate, bibliographies, bibliographyPapers } from '../netlify/functions/_db'
+import { getDb, migrate, bibliographies, bibliographyPapers } from '../lib/_db'
 import { eq, sql } from 'drizzle-orm'
 
 const json = (data: any, status = 200) =>

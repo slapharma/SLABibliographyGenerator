@@ -1,14 +1,12 @@
 export const config = { runtime: 'edge' }
 
-import { getDb, searchHistory, migrate } from '../netlify/functions/_db'
-import { searchPubMed } from '../netlify/functions/_sources/pubmed'
-import { searchEuropePMC } from '../netlify/functions/_sources/europepmc'
-import { searchClinicalTrials } from '../netlify/functions/_sources/clinicaltrials'
-import { searchSemanticScholar } from '../netlify/functions/_sources/semanticscholar'
-import { searchCrossRef } from '../netlify/functions/_sources/crossref'
-import { searchOpenAlex } from '../netlify/functions/_sources/openalex'
-import { searchLens } from '../netlify/functions/_sources/lens'
-import { searchScholar } from '../netlify/functions/_sources/scholar'
+import { getDb, searchHistory, migrate } from '../lib/_db'
+import { searchPubMed } from '../lib/sources/pubmed'
+import { searchEuropePMC } from '../lib/sources/europepmc'
+import { searchClinicalTrials } from '../lib/sources/clinicaltrials'
+import { searchSemanticScholar } from '../lib/sources/semanticscholar'
+import { searchCrossRef } from '../lib/sources/crossref'
+import { searchScholar } from '../lib/sources/scholar'
 import type { SearchParams, Source, SourceResult, Paper } from '../src/types/index'
 
 function deduplicateResults(results: SourceResult[]): SourceResult[] {
@@ -64,8 +62,6 @@ const HANDLERS: Record<Source, (p: SearchParams) => Promise<any[]>> = {
   clinicaltrials: searchClinicalTrials,
   semanticscholar: searchSemanticScholar,
   crossref: searchCrossRef,
-  openalex: searchOpenAlex,
-  lens: searchLens,
   scholar: searchScholar,
 }
 

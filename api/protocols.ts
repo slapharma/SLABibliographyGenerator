@@ -11,7 +11,7 @@
 export const config = { runtime: 'edge' }
 
 import { eq } from 'drizzle-orm'
-import { migrate, getDb, protocols } from '../netlify/functions/_db'
+import { migrate, getDb, protocols } from '../lib/_db'
 
 const json = (data: any, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })

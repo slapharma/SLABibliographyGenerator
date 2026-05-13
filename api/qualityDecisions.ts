@@ -2,7 +2,7 @@
 export const config = { runtime: 'edge' }
 
 import { and, eq } from 'drizzle-orm'
-import { migrate, getDb, qualityAssessments, auditLog } from '../netlify/functions/_db'
+import { migrate, getDb, qualityAssessments, auditLog } from '../lib/_db'
 
 type BiasJudgement = 'low' | 'some_concern' | 'high'
 

@@ -1,4 +1,3 @@
-// netlify/functions/_sources/extractionEngine.ts
 //
 // Phase 2: Field-by-field data extraction from full-text papers using Claude
 // Haiku. Builds the prompt dynamically from the protocol's ExtractionField[]

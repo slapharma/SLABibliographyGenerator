@@ -1,7 +1,7 @@
 export const config = { runtime: 'edge' }
 
 import { sql } from 'drizzle-orm'
-import { getDb, migrate } from '../netlify/functions/_db'
+import { getDb, migrate } from '../lib/_db'
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {

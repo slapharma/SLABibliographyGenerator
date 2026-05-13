@@ -9,13 +9,13 @@ import {
   extractionResults,
   qualityAssessments,
   auditLog,
-} from '../netlify/functions/_db'
+} from '../lib/_db'
 import {
   assessQualityBatch,
   createQualityBatches,
   QUALITY_MODEL,
   type QualityPaperInput,
-} from '../netlify/functions/_sources/qualityAssessmentEngine'
+} from '../lib/sources/qualityAssessmentEngine'
 
 const json = (data: any, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })

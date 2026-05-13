@@ -1,4 +1,3 @@
-// netlify/functions/_db.ts
 import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
 import { pgTable, serial, text, integer, timestamp, jsonb, varchar, decimal } from 'drizzle-orm/pg-core'
@@ -104,9 +103,10 @@ export const qualityAssessments = pgTable('quality_assessments', {
 const schema = { bibliographies, bibliographyPapers, savedSearches, searchHistory, protocols, pipelineExecutions, auditLog, extractionResults, qualityAssessments }
 
 // ── Client ───────────────────────────────────────────────
-let _db: ReturnType<typeof drizzle> | null = null
+type DB = ReturnType<typeof drizzle<typeof schema>>
+let _db: DB | null = null
 
-export function getDb() {
+export function getDb(): DB {
   if (!_db) {
     const sql = neon(process.env.DATABASE_URL!)
     _db = drizzle(sql, { schema })
